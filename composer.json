@@ -1,0 +1,28 @@
+{
+    "name": "Ibtikar/ShareEconomyPayFortBundle",
+    "type": "laravel-library",
+    "description": "Ibtikar share economy PayFort integration bundle",
+    "keywords": ["payfort"],
+    "homepage": "https://github.com/Ibtikar/ShareEconomyPayFortBundle",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Ibtikar"
+        }
+    ],
+    "require": {
+        "php": ">=5.5.9",
+        "composer/installers": "~1.0",
+        "leaseweb/api-caller-bundle": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Ibtikar\\ShareEconomyPayFortBundle\\": ""
+        }
+    },
+    "extra": {
+        "installer-paths": {
+            "src/{$name}": ["Ibtikar/ShareEconomyPayFortBundle"]
+        }
+    }
+}

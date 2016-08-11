@@ -1,0 +1,4 @@
+services:
+    ibtikar.shareeconomy.payfort.integration:
+        class: Ibtikar\ShareEconomyPayFortBundle\Service\PayFortIntegration
+        arguments: [ %kmj.paypalbridge.bridge.parameters% ]
