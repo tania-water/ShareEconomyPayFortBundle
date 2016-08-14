@@ -2,11 +2,15 @@
 
 namespace Ibtikar\ShareEconomyPayFortBundle\Service;
 
+use Lsw\ApiCallerBundle\Caller\LoggingApiCaller;
+use Lsw\ApiCallerBundle\Call\HttpPostJson;
+
 /**
  * @author Karim Shendy <kareem.elshendy@ibtikar.net.sa>
  */
 class PayFortIntegration
 {
+    private $apiCaller;
     private $config;
     private $merchantIdentifier;
     private $accessCode;
@@ -18,24 +22,25 @@ class PayFortIntegration
     private $language = 'en';
 
     const PRODUCTION_URL  = "https://checkout.payfort.com/FortAPI/paymentApi";
-    const TEST_URL        = "https://sbcheckout.payfort.com/FortAPI/paymentApi";
+    const SANDBOX_URL     = "https://sbcheckout.payfort.com/FortAPI/paymentApi";
     const PRODUCTION_MODE = "production";
-    const TEST_MODE       = "test";
+    const SANDBOX_MODE    = "sandbox";
 
     /**
      * @param array $config
      */
-    public function __construct(array $config)
+    public function __construct(array $config, LoggingApiCaller $apiCaller)
     {
-        $this->config = $config;
-        $this->mode   = $config['environment'];
+        $this->apiCaller = $apiCaller;
+        $this->config    = $config;
+        $this->mode      = $config['environment'];
 
         if ($config['environment'] == self::PRODUCTION_MODE) {
             $this->baseURL = self::PRODUCTION_URL;
             $this->setEnvironmentAttrs($config['production']);
         } else {
-            $this->baseURL = self::TEST_URL;
-            $this->setEnvironmentAttrs($config['test']);
+            $this->baseURL = self::SANDBOX_URL;
+            $this->setEnvironmentAttrs($config['sandbox']);
         }
     }
 
@@ -100,5 +105,56 @@ class PayFortIntegration
     private function calculateResponseSignature($requestParams)
     {
         return $this->getSignature($requestParams, $this->shaResponsePhrase);
+    }
+
+    /**
+     *
+     * @param type $responseParameters
+     * @return type
+     */
+    private function isValidResponse($responseParameters)
+    {
+        return isset($responseParameters['signature']) && $this->calculateResponseSignature($responseParameters) == $responseParameters['signature'];
+    }
+
+    /**
+     *
+     * @param array $parameters
+     * @return array
+     * @throws \Exception
+     */
+    public function makeRequest($parameters)
+    {
+        $parameters['language']            = $this->language;
+        $parameters['merchant_identifier'] = $this->merchantIdentifier;
+        $parameters['access_code']         = $this->accessCode;
+        $parameters['signature']           = $this->calculateRequestSignature($parameters);
+        $response                          = $this->apiCaller->call(new HttpPostJson($this->baseURL, $parameters));
+
+        // verify the request signature
+        if (!$this->isValidResponse($response)) {
+            throw new \Exception("Response signature not correct.");
+        }
+
+        return $response;
+    }
+
+    /**
+     *
+     * @param type $cardNumber
+     * @param type $cardSecurityCode
+     * @param type $cardExpiryDate
+     * @return type
+     */
+    public function storeCustomerCredit($cardNumber, $cardSecurityCode, $cardExpiryDate)
+    {
+        $parameters = [
+            'service_command'    => 'TOKENIZATION',
+            'card_number'        => $cardNumber,
+            'card_security_code' => $cardSecurityCode,
+            'expiry_date'        => $cardExpiryDate
+        ];
+
+        return $this->makeRequest($parameters);
     }
 }
