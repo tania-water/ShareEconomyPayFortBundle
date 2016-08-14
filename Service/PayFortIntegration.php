@@ -3,7 +3,7 @@
 namespace Ibtikar\ShareEconomyPayFortBundle\Service;
 
 use Lsw\ApiCallerBundle\Caller\LoggingApiCaller;
-use Lsw\ApiCallerBundle\Call\HttpPostJson;
+use Lsw\ApiCallerBundle\Call\HttpPostJsonBody;
 
 /**
  * @author Karim Shendy <kareem.elshendy@ibtikar.net.sa>
@@ -50,11 +50,11 @@ class PayFortIntegration
      */
     private function setEnvironmentAttrs($config)
     {
-        $this->merchantIdentifier = $config['production']['merchantIdentifier'];
-        $this->accessCode         = $config['production']['accessCode'];
-        $this->shaType            = $config['production']['shaType'];
-        $this->shaRequestPhrase   = $config['production']['shaRequestPhrase'];
-        $this->shaResponsePhrase  = $config['production']['shaResponsePhrase'];
+        $this->merchantIdentifier = $config['merchantIdentifier'];
+        $this->accessCode         = $config['accessCode'];
+        $this->shaType            = $config['shaType'];
+        $this->shaRequestPhrase   = $config['shaRequestPhrase'];
+        $this->shaResponsePhrase  = $config['shaResponsePhrase'];
     }
 
     /**
@@ -70,7 +70,7 @@ class PayFortIntegration
          * require you to calculate the signature without including the following parameters in the signature
          * even if these parameters included in the request of Merchant Page 2.0: Card_security_code , card_number , expiry_date 
          */
-        unset($params['card_security_code'], $params['card_number'], $params['expiry_date ']);
+        unset($params['r'], $params['signature'], $params['integration_type ']);
 
         ksort($params);
 
@@ -93,7 +93,7 @@ class PayFortIntegration
      */
     private function calculateRequestSignature($requestParams)
     {
-        return $this->getSignature($requestParams, $this->shaRequestPhrase);
+        return $this->calculateSignature($requestParams, $this->shaRequestPhrase);
     }
 
     /**
@@ -104,7 +104,7 @@ class PayFortIntegration
      */
     private function calculateResponseSignature($requestParams)
     {
-        return $this->getSignature($requestParams, $this->shaResponsePhrase);
+        return $this->calculateSignature($requestParams, $this->shaResponsePhrase);
     }
 
     /**
@@ -129,7 +129,7 @@ class PayFortIntegration
         $parameters['merchant_identifier'] = $this->merchantIdentifier;
         $parameters['access_code']         = $this->accessCode;
         $parameters['signature']           = $this->calculateRequestSignature($parameters);
-        $response                          = $this->apiCaller->call(new HttpPostJson($this->baseURL, $parameters));
+        $response                          = $this->apiCaller->call(new HttpPostJsonBody($this->baseURL, $parameters, true, [ 'HTTPHEADER' => ['Content-Type:application/json']]));
 
         // verify the request signature
         if (!$this->isValidResponse($response)) {

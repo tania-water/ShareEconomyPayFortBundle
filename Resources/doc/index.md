@@ -76,4 +76,7 @@ Installation steps
             sslversion: 3  # set to 3 to avoid any bugs that relate to automatic version selection.
             fresh_connect: false  # set to true to force full reconnect every call.
 
+9.Now you can use the service as following:
     
+    $payfortIntegration = $this->get('ibtikar.shareeconomy.payfort.integration');
+    $response = $payfortIntegration->storeCustomerCredit("4005550000000001", "123", "0517");

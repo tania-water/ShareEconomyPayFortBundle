@@ -1,4 +1,4 @@
 services:
     ibtikar.shareeconomy.payfort.integration:
         class: Ibtikar\ShareEconomyPayFortBundle\Service\PayFortIntegration
-        arguments: [ %ibtikar.shareeconomy.payfort.integration.parameters% ]
+        arguments: [ %ibtikar.shareeconomy.payfort.integration.parameters%, "@api_caller" ]
