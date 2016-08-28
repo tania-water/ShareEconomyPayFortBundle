@@ -1,0 +1,19 @@
+sofra_payfort_host_to_host_notifications:
+    path:     /host-to-host-notifications
+    defaults: { _controller: IbtikarShareEconomyPayFortBundle:API/PayFort:hostToHostNotifications }
+
+sofra_payfort_after_payment:
+    path:     /after-payment
+    defaults: { _controller: IbtikarShareEconomyPayFortBundle:API/PayFort:afterPayment }
+
+sofra_payfort_add_credit_card:
+    path:     /add-credit-card
+    defaults: { _controller: IbtikarShareEconomyPayFortBundle:API/PayFort:addCreditCard }
+
+sofra_payfort_request_sdk_token:
+    path:     /request-sdk-token/{token}
+    defaults: { _controller: IbtikarShareEconomyPayFortBundle:API/PayFort:requestSDKToken }
+
+sofra_payfort_purchase:
+    path:     /purchase/{token}
+    defaults: { _controller: IbtikarShareEconomyPayFortBundle:API/PayFort:purchase }

@@ -1,0 +1,14 @@
+<form action="{{ formAction }}" method="post">
+    {% for name, value in formParams %}
+        <input type="hidden" name="{{ name }}" value="{{ value }}" />
+    {% endfor %}
+    <label>name</label>
+    <input type="text" name="card_holder_name"><br>
+    <label>card number</label>
+    <input type="text" name="card_number"><br>
+    <label>cvc</label>
+    <input type="text" name="card_security_code"><br>
+    <label>expiry date</label>
+    <input type="text" name="expiry_date"><br>
+    <input type="submit" value="submit">
+</form>

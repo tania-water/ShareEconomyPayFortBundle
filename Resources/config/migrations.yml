@@ -1,0 +1,4 @@
+name: Share economy PayFort integration Migrations  
+migrations_namespace: Ibtikar\ShareEconomyPayFortBundle\Migrations
+table_name: migration_versions_payfort
+migrations_directory: "src/Ibtikar/ShareEconomyPayFortBundle/Migrations"

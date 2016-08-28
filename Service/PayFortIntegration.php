@@ -10,6 +10,7 @@ use Lsw\ApiCallerBundle\Call\HttpPostJsonBody;
  */
 class PayFortIntegration
 {
+    private $templating;
     private $apiCaller;
     private $config;
     private $merchantIdentifier;
@@ -18,28 +19,36 @@ class PayFortIntegration
     private $shaRequestPhrase;
     private $shaResponsePhrase;
     private $mode;
-    private $baseURL;
+    private $baseMerchantPageURL;
+    private $baseApiURL;
     private $language = 'en';
 
-    const PRODUCTION_URL  = "https://checkout.payfort.com/FortAPI/paymentApi";
-    const SANDBOX_URL     = "https://sbcheckout.payfort.com/FortAPI/paymentApi";
-    const PRODUCTION_MODE = "production";
-    const SANDBOX_MODE    = "sandbox";
+    const SANDBOX_MODE                 = "sandbox";
+    const PRODUCTION_MODE              = "production";
+    const SANDBOX_API_URL              = "https://sbpaymentservices.payfort.com/FortAPI/paymentApi";
+    const PRODUCTION_API_URL           = "https://paymentservices.payfort.com/FortAPI/paymentApi";
+    const SANDBOX_MERCHANT_PAGE_URL    = "https://sbcheckout.PayFort.com/FortAPI/paymentPage";
+    const PRODUCTION_MERCHANT_PAGE_URL = "https://checkout.payfort.com/FortAPI/paymentPage";
 
     /**
      * @param array $config
      */
-    public function __construct(array $config, LoggingApiCaller $apiCaller)
+    public function __construct(array $config, $templating, LoggingApiCaller $apiCaller)
     {
-        $this->apiCaller = $apiCaller;
-        $this->config    = $config;
-        $this->mode      = $config['environment'];
+        $this->templating = $templating;
+        $this->apiCaller  = $apiCaller;
+        $this->config     = $config;
+        $this->mode       = $config['environment'];
 
         if ($config['environment'] == self::PRODUCTION_MODE) {
-            $this->baseURL = self::PRODUCTION_URL;
+            $this->baseMerchantPageURL = self::PRODUCTION_MERCHANT_PAGE_URL;
+            $this->baseApiURL          = self::PRODUCTION_API_URL;
+
             $this->setEnvironmentAttrs($config['production']);
         } else {
-            $this->baseURL = self::SANDBOX_URL;
+            $this->baseMerchantPageURL = self::SANDBOX_MERCHANT_PAGE_URL;
+            $this->baseApiURL          = self::SANDBOX_API_URL;
+
             $this->setEnvironmentAttrs($config['sandbox']);
         }
     }
@@ -63,23 +72,16 @@ class PayFortIntegration
      * @param array $params
      * @return string signature
      */
-    private function calculateSignature($params, $shaPhrase)
+    private function calculateSignature($params, $shaPhrase, $excludedParams)
     {
-        /**
-         * As mentioned in the payfort documentation, the calculations for the Merchant Page 2.0
-         * require you to calculate the signature without including the following parameters in the signature
-         * even if these parameters included in the request of Merchant Page 2.0: Card_security_code , card_number , expiry_date 
-         */
-        unset($params['r'], $params['signature'], $params['integration_type ']);
-
         ksort($params);
 
         $data = $shaPhrase;
-
         foreach ($params as $key => $val) {
-            $data .= $key.'='.$val;
+            if (!in_array($key, $excludedParams)) {
+                $data .= $key . '=' . $val;
+            }
         }
-
         $data .= $shaPhrase;
 
         return hash($this->shaType, $data);
@@ -93,7 +95,7 @@ class PayFortIntegration
      */
     private function calculateRequestSignature($requestParams)
     {
-        return $this->calculateSignature($requestParams, $this->shaRequestPhrase);
+        return $this->calculateSignature($requestParams, $this->shaRequestPhrase, ["card_number", "expiry_date", "card_security_code", "card_holder_name"]);
     }
 
     /**
@@ -102,9 +104,9 @@ class PayFortIntegration
      * @param array $requestParams
      * @return string Request signature
      */
-    private function calculateResponseSignature($requestParams)
+    public function calculateResponseSignature($requestParams)
     {
-        return $this->calculateSignature($requestParams, $this->shaResponsePhrase);
+        return $this->calculateSignature($requestParams, $this->shaResponsePhrase, ["signature"]);
     }
 
     /**
@@ -123,13 +125,11 @@ class PayFortIntegration
      * @return array
      * @throws \Exception
      */
-    public function makeRequest($parameters)
+    public function makeAPIRequest($params)
     {
-        $parameters['language']            = $this->language;
-        $parameters['merchant_identifier'] = $this->merchantIdentifier;
-        $parameters['access_code']         = $this->accessCode;
-        $parameters['signature']           = $this->calculateRequestSignature($parameters);
-        $response                          = $this->apiCaller->call(new HttpPostJsonBody($this->baseURL, $parameters, true, [ 'HTTPHEADER' => ['Content-Type:application/json']]));
+        $parameters = $this->addDefaultParams($params);
+
+        $response   = $this->apiCaller->call(new HttpPostJsonBody($this->baseApiURL, $parameters, true, [ 'HTTPHEADER' => ['Content-Type:application/json']]));
 
         // verify the request signature
         if (!$this->isValidResponse($response)) {
@@ -146,15 +146,74 @@ class PayFortIntegration
      * @param type $cardExpiryDate
      * @return type
      */
-    public function storeCustomerCredit($cardNumber, $cardSecurityCode, $cardExpiryDate)
+    public function storeCustomerCredit($holderName, $merchantReference, $cardNumber, $cardSecurityCode, $cardExpiryDate)
     {
         $parameters = [
+            'card_holder_name'   => $holderName,
+            'merchant_reference' => $merchantReference,
             'service_command'    => 'TOKENIZATION',
             'card_number'        => $cardNumber,
             'card_security_code' => $cardSecurityCode,
             'expiry_date'        => $cardExpiryDate
         ];
 
-        return $this->makeRequest($parameters);
+        return $this->makeAPIRequest($parameters);
+    }
+
+    /**
+     *
+     * @param type $deviceID
+     * @return type
+     */
+    public function requestSDKToken($deviceID)
+    {
+        $parameters = [
+            'service_command'  => 'SDK_TOKEN',
+            'device_id' => $deviceID
+        ];
+
+        return $this->makeAPIRequest($parameters);
+    }
+
+    /**
+     * gererates the tokenization form html that should be submitted to payfort
+     *
+     * @param type $merchantReference
+     * @return type
+     */
+    public function getTokenizationForm($merchantReference)
+    {
+        $params = [
+            'service_command'    => 'TOKENIZATION',
+            'merchant_reference' => $merchantReference
+        ];
+
+        $formParams = $this->addDefaultParams($params);
+
+        return $this->templating->render('IbtikarShareEconomyPayFortBundle:Default:tokenizationForm.html.twig', ['formParams' => $formParams, 'formAction' => $this->baseMerchantPageURL]);
+    }
+
+    public function purchase($email, $token_name, $amount, $reference)
+    {
+        $parameters = [
+            'command'            => 'PURCHASE',
+            'customer_email'     => $email,
+            'currency'           => 'AED',
+            'amount'             => $amount,
+            'token_name'         => $token_name,
+            'merchant_reference' => $reference
+        ];
+
+        return $this->makeAPIRequest($parameters);
+    }
+
+    private function addDefaultParams($params)
+    {
+        $params['language']            = $this->language;
+        $params['merchant_identifier'] = $this->merchantIdentifier;
+        $params['access_code']         = $this->accessCode;
+        $params['signature']           = $this->calculateRequestSignature($params);
+
+        return $params;
     }
 }
