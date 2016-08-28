@@ -4,21 +4,39 @@ namespace Ibtikar\ShareEconomyPayFortBundle\Controller\API;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Nelmio\ApiDocBundle\Annotation\ApiDoc;
+use Ibtikar\ShareEconomyPayFortBundle\APIResponse as AppAPIResponses;
 
 class PayFortController extends Controller
 {
 
-    public function indexAction(Request $request)
+    /**
+     * request device SDK token
+     *
+     * @ApiDoc(
+     *  section="PayFort",
+     *  output="Ibtikar\ShareEconomyPayFortBundle\APIResponse\SDKTokenResponse"
+     * )
+     * @author Karim Shendy <kareem.elshendy@ibtikar.net.sa>
+     * @return JsonResponse
+     */
+    public function requestSDKTokenAction(Request $request, $device_id)
     {
         $payfortIntegration = $this->get('ibtikar.shareeconomy.payfort.integration');
-        $response           = $payfortIntegration->requestSDKToken("ffffffff-a9fa-0b44-7b27-29e70033c587");
+        $apiResponse        = $payfortIntegration->requestSDKToken($device_id);
+        $responseObject     = new AppAPIResponses\SDKTokenResponse();
 
-        echo "<pre>";
-        var_dump($response);
-        echo "</pre>";
-        die;
+        if ($apiResponse['status'] == 22 && $apiResponse['response_code'] == 22000) {
+            $responseObject->SDKToken = $apiResponse['sdk_token'];
+            $responseObject->message  = $apiResponse['response_message'];
+        } else {
+            $responseObject->status  = false;
+            $responseObject->code    = $apiResponse['status'];
+            $responseObject->message = $apiResponse['response_message'];
+        }
 
-        return $this->render('AppBundle:Dashboard:index.html.twig');
+        return new JsonResponse($responseObject);
     }
 
     public function hostToHostNotificationsAction(Request $request)
@@ -39,17 +57,6 @@ class PayFortController extends Controller
         $tokenizationForm   = $payfortIntegration->getTokenizationForm(rand(10000, 99999));
 
         return $this->render('IbtikarShareEconomyPayFortBundle:Default:addCreditCard.html.twig', ['tokenizationForm' => $tokenizationForm]);
-    }
-
-    public function requestSDKTokenAction(Request $request, $token)
-    {
-        $payfortIntegration = $this->get('ibtikar.shareeconomy.payfort.integration');
-        $response           = $payfortIntegration->requestSDKToken($token);
-
-        echo "<pre>";
-        var_dump($response);
-        echo "</pre>";
-        die;
     }
 
     public function purchaseAction(Request $request, $token)

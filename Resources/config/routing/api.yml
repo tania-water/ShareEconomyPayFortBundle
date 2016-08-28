@@ -1,0 +1,3 @@
+ibtikar_share_economy_payfort_request_sdk_token:
+    path:     /request-sdk-token/{device_id}
+    defaults: { _controller: IbtikarShareEconomyPayFortBundle:API/PayFort:requestSDKToken }
