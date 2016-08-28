@@ -129,7 +129,7 @@ class PayFortIntegration
     {
         $parameters = $this->addDefaultParams($params);
 
-        $response   = $this->apiCaller->call(new HttpPostJsonBody($this->baseApiURL, $parameters, true, [ 'HTTPHEADER' => ['Content-Type:application/json']]));
+        $response = $this->apiCaller->call(new HttpPostJsonBody($this->baseApiURL, $parameters, true, [ 'HTTPHEADER' => ['Content-Type:application/json']]));
 
         // verify the request signature
         if (!$this->isValidResponse($response)) {
@@ -168,8 +168,25 @@ class PayFortIntegration
     public function requestSDKToken($deviceID)
     {
         $parameters = [
-            'service_command'  => 'SDK_TOKEN',
-            'device_id' => $deviceID
+            'service_command' => 'SDK_TOKEN',
+            'device_id'       => $deviceID
+        ];
+
+        return $this->makeAPIRequest($parameters);
+    }
+
+    /**
+     *
+     * @param type $deviceID
+     * @return type
+     */
+    public function refund($fortID, $amount, $currency)
+    {
+        $parameters = [
+            'command'  => 'REFUND',
+            'fort_id'  => $fortID,
+            'amount'   => $amount,
+            'currency' => $currency
         ];
 
         return $this->makeAPIRequest($parameters);

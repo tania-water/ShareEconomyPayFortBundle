@@ -69,4 +69,15 @@ class PayFortController extends Controller
         echo "</pre>";
         die;
     }
+
+    public function refundAction(Request $request, $fortId, $amount, $currency)
+    {
+        $payfortIntegration = $this->get('ibtikar.shareeconomy.payfort.integration');
+        $response           = $payfortIntegration->refund($fortId, $amount, $currency);
+
+        echo "<pre>";
+        var_dump($response);
+        echo "</pre>";
+        die;
+    }
 }
