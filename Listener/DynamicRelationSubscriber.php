@@ -34,7 +34,7 @@ class DynamicRelationSubscriber implements EventSubscriberInterface
         }
 
         $namingStrategy = $eventArgs
-            ->getEntityManager()
+            ->getManager()
             ->getConfiguration()
             ->getNamingStrategy()
         ;
