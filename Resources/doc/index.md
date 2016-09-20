@@ -76,6 +76,16 @@ Installation steps
             sslversion: 3  # set to 3 to avoid any bugs that relate to automatic version selection.
             fresh_connect: false  # set to true to force full reconnect every call.
 
+9.Relating your payment methods holder class to the payment method class
+    1.Let your holder class implements Ibtikar\ShareEconomyPayFortBundle\Entity\PfPaymentMethodHolderInterface
+    2.Use PfPaymentMethodHolderTrait trait inside your holder class by adding the following line inside your class
+        use \Ibtikar\ShareEconomyPayFortBundle\Entity\PfPaymentMethodHolderTrait;
+    3.In your config.yml update doctrine section by adding the following:
+        doctrine:
+            orm:
+                resolve_target_entities:
+                    Ibtikar\ShareEconomyPayFortBundle\Entity\PfPaymentMethodHolderInterface: {your holder class full qualified name space. ex: AppBundle\Entity\User}
+
 9.Now you can use the service as following:
     
     $payfortIntegration = $this->get('ibtikar.shareeconomy.payfort.integration');
