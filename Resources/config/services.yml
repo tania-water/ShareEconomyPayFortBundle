@@ -1,8 +1,8 @@
 services:
     ibtikar.shareeconomy.payfort.integration:
         class: Ibtikar\ShareEconomyPayFortBundle\Service\PayFortIntegration
-        arguments: [ %ibtikar.shareeconomy.payfort.integration.parameters%, "@templating", "@api_caller" ]
-        
+        arguments: [ "%ibtikar.shareeconomy.payfort.integration.parameters%", "@templating", "@api_caller" ]
+
     ibtikar.shareeconomy.payfort.relation_subscriber:
         class: Ibtikar\ShareEconomyPayFortBundle\Listener\DynamicRelationSubscriber
         arguments: [ '@translator', '@user_operations' ]
