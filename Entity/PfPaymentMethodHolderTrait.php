@@ -1,21 +1,24 @@
 <?php
 
 namespace Ibtikar\ShareEconomyPayFortBundle\Entity;
+use Doctrine\ORM\Mapping as ORM;
 
 trait PfPaymentMethodHolderTrait
 {
     /**
      * @var ArrayCollection
+     *
+     * @ORM\OneToMany(targetEntity="Ibtikar\ShareEconomyPayFortBundle\Entity\PfPaymentMethod", mappedBy="holder")
      */
     protected $pfPaymentMethods;
 
     /**
      * Add PfPaymentMethod
      *
-     * @param Ibtikar\ShareEconomyPayFortBundle\Entity\PfPaymentMethod $pfPaymentMethod
+     * @param PfPaymentMethod $pfPaymentMethod
      * @return this
      */
-    public function addPfPaymentMethod(Ibtikar\ShareEconomyPayFortBundle\Entity\PfPaymentMethod $pfPaymentMethod)
+    public function addPfPaymentMethod(PfPaymentMethod $pfPaymentMethod)
     {
         $this->pfPaymentMethods->add($pfPaymentMethod);
 
@@ -25,9 +28,9 @@ trait PfPaymentMethodHolderTrait
     /**
      * Add PfPaymentMethod
      *
-     * @param Ibtikar\ShareEconomyPayFortBundle\Entity\PfPaymentMethod $pfPaymentMethod
+     * @param PfPaymentMethod $pfPaymentMethod
      */
-    public function removePfPaymentMethod(Ibtikar\ShareEconomyPayFortBundle\Entity\PfPaymentMethod $pfPaymentMethod)
+    public function removePfPaymentMethod(PfPaymentMethod $pfPaymentMethod)
     {
         $this->pfPaymentMethods->removeElement($pfPaymentMethod);
     }

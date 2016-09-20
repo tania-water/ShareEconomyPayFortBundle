@@ -9,7 +9,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class DynamicRelationSubscriber implements EventSubscriberInterface
 {
-    const INTERFACE_FQNS = 'Ibtikar\ShareEconomyPayFortBundle\PfPaymentMethodHolderInterface';
+    const INTERFACE_FQNS = 'Ibtikar\ShareEconomyPayFortBundle\Entity\PfPaymentMethodHolderInterface';
 
     /**
      * {@inheritDoc}
@@ -34,7 +34,7 @@ class DynamicRelationSubscriber implements EventSubscriberInterface
         }
 
         $namingStrategy = $eventArgs
-            ->getEntityManager()
+            ->getManager()
             ->getConfiguration()
             ->getNamingStrategy()
         ;

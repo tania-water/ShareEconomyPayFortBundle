@@ -11,9 +11,9 @@ namespace Ibtikar\ShareEconomyPayFortBundle\Entity;
 interface PfPaymentMethodHolderInterface
 {
 
-    public function addPfPaymentMethod(Ibtikar\ShareEconomyPayFortBundle\Entity\PfPaymentMethod $pfPaymentMethod);
+    public function addPfPaymentMethod(PfPaymentMethod $pfPaymentMethod);
 
-    public function removePfPaymentMethod(Ibtikar\ShareEconomyPayFortBundle\Entity\PfPaymentMethod $pfPaymentMethod);
+    public function removePfPaymentMethod(PfPaymentMethod $pfPaymentMethod);
 
     public function getPfPaymentMethods();
 

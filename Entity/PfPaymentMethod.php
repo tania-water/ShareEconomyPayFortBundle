@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * PfPaymentMethod
  *
- * @ORM\Table(name="pf_payment_method")
+ * @ORM\Table(name="pf_payment_method", indexes={@ORM\Index(name="holder_id", columns={"holder_id"})})
  * @ORM\Entity
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  */
@@ -24,13 +24,13 @@ class PfPaymentMethod
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Ibtikar\ShareEconomyPayFortBundle\Entity\PfPaymentMethodHolderInterface", inversedBy="paymentMethods")
+     * @ORM\ManyToOne(targetEntity="PfPaymentMethodHolderInterface", inversedBy="pfPaymentMethods")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="holder_id", referencedColumnName="id")
+     *   @ORM\JoinColumn(name="holder_id", referencedColumnName="id", nullable=false)
      * })
      * @var PfPaymentMethodHolderInterface
      */
-//    private $holder;
+    private $holder;
 
     /**
      * @var string
