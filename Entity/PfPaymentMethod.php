@@ -4,12 +4,27 @@ namespace Ibtikar\ShareEconomyPayFortBundle\Entity;
 
 use Gedmo\Mapping\Annotation as Gedmo;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * PfPaymentMethod
  *
- * @ORM\Table(name="pf_payment_method", indexes={@ORM\Index(name="holder_id", columns={"holder_id"})})
+ * @ORM\Table(
+ *      name="pf_payment_method",
+ *      uniqueConstraints={
+ *          @ORM\UniqueConstraint(name="token_name", columns={"token_name"}),
+ *          @ORM\UniqueConstraint(name="fort_id", columns={"fort_id"}),
+ *          @ORM\UniqueConstraint(name="merchant_reference", columns={"merchant_reference"})
+ *      },
+ *      indexes={
+ *          @ORM\Index(name="holder_id", columns={"holder_id"})
+ *      }
+ * )
  * @ORM\Entity
+ * @UniqueEntity(fields={"tokenName"}, message="Token name already exist")
+ * @UniqueEntity(fields={"fortId"}, message="Fort ID already exist")
+ * @UniqueEntity(fields={"merchantReference"}, message="Merchant reference already exist")
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  */
 class PfPaymentMethod
@@ -29,50 +44,63 @@ class PfPaymentMethod
      *   @ORM\JoinColumn(name="holder_id", referencedColumnName="id", nullable=false)
      * })
      * @var PfPaymentMethodHolderInterface
+     *
+     * @Assert\NotBlank(message="fill_mandatory_field")
+     * @Assert\Valid
      */
     private $holder;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="card_holder_name", type="string", length=255, nullable=true)
+     * @ORM\Column(name="fort_id", type="string", length=255, nullable=false)
+     *
+     * @Assert\NotBlank(message="fill_mandatory_field")
      */
-    private $cardHolderName;
+    private $fortId;
 
     /**
      * @var string
      *
      * @ORM\Column(name="card_number", type="string", length=20, nullable=false)
+     *
+     * @Assert\NotBlank(message="fill_mandatory_field")
      */
     private $cardNumber;
 
     /**
-     * @var \DateTime
+     * @var string
      *
-     * @ORM\Column(name="expiry_date", type="date", nullable=false)
+     * @ORM\Column(name="expiry_date", type="string", length=10, nullable=false)
+     *
+     * @Assert\NotBlank(message="fill_mandatory_field")
      */
     private $expiryDate;
 
     /**
-     * @var integer
+     * @var string
      *
-     * @ORM\Column(name="card_bin", type="integer", nullable=true)
+     * @ORM\Column(name="merchant_reference", type="string", length=50, nullable=false)
+     *
+     * @Assert\NotBlank(message="fill_mandatory_field")
      */
-    private $cardBin;
+    private $merchantReference;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="token_name", type="string", length=255, nullable=true)
+     * @ORM\Column(name="token_name", type="string", length=255, nullable=false)
+     *
+     * @Assert\NotBlank(message="fill_mandatory_field")
      */
     private $tokenName;
 
     /**
-     * @var integer
+     * @var string
      *
-     * @ORM\Column(name="pf_status", type="smallint", nullable=true)
+     * @ORM\Column(name="payment_option", type="string", length=50, nullable=true)
      */
-    private $pfStatus;
+    private $paymentOption;
 
     /**
      * @var \DateTime
@@ -88,8 +116,6 @@ class PfPaymentMethod
      * @ORM\Column(name="deleted_at", type="datetime", nullable=true)
      */
     private $deletedAt;
-
-
 
     /**
      * Get id
@@ -122,27 +148,27 @@ class PfPaymentMethod
     }
 
     /**
-     * Set cardHolderName
+     * Set fortId
      *
-     * @param string $cardHolderName
+     * @param string $fortId
      *
      * @return PfPaymentMethod
      */
-    public function setCardHolderName($cardHolderName)
+    public function setFortId($fortId)
     {
-        $this->cardHolderName = $cardHolderName;
+        $this->fortId = $fortId;
 
         return $this;
     }
 
     /**
-     * Get cardHolderName
+     * Get fortId
      *
      * @return string
      */
-    public function getCardHolderName()
+    public function getFortId()
     {
-        return $this->cardHolderName;
+        return $this->fortId;
     }
 
     /**
@@ -172,7 +198,7 @@ class PfPaymentMethod
     /**
      * Set expiryDate
      *
-     * @param \DateTime $expiryDate
+     * @param string $expiryDate
      *
      * @return PfPaymentMethod
      */
@@ -186,7 +212,7 @@ class PfPaymentMethod
     /**
      * Get expiryDate
      *
-     * @return \DateTime
+     * @return string
      */
     public function getExpiryDate()
     {
@@ -194,27 +220,27 @@ class PfPaymentMethod
     }
 
     /**
-     * Set cardBin
+     * Set merchantReference
      *
-     * @param integer $cardBin
+     * @param string $merchantReference
      *
      * @return PfPaymentMethod
      */
-    public function setCardBin($cardBin)
+    public function setMerchantReference($merchantReference)
     {
-        $this->cardBin = $cardBin;
+        $this->merchantReference = $merchantReference;
 
         return $this;
     }
 
     /**
-     * Get cardBin
+     * Get merchantReference
      *
-     * @return integer
+     * @return string
      */
-    public function getCardBin()
+    public function getMerchantReference()
     {
-        return $this->cardBin;
+        return $this->merchantReference;
     }
 
     /**
@@ -242,27 +268,27 @@ class PfPaymentMethod
     }
 
     /**
-     * Set pfStatus
+     * Set paymentOption
      *
-     * @param integer $pfStatus
+     * @param string $paymentOption
      *
      * @return PfPaymentMethod
      */
-    public function setPfStatus($pfStatus)
+    public function setPaymentOption($paymentOption)
     {
-        $this->pfStatus = $pfStatus;
+        $this->paymentOption = $paymentOption;
 
         return $this;
     }
 
     /**
-     * Get pfStatus
+     * Get paymentOption
      *
-     * @return integer
+     * @return string
      */
-    public function getPfStatus()
+    public function getPaymentOption()
     {
-        return $this->pfStatus;
+        return $this->paymentOption;
     }
 
     /**
