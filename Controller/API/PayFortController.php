@@ -59,8 +59,9 @@ class PayFortController extends Controller
      */
     public function addPaymentMethodAction(Request $request)
     {
-        $em   = $this->getDoctrine()->getManager();
-        $user = $this->getUser();
+        $em                      = $this->getDoctrine()->getManager();
+        $user                    = $this->getUser();
+        $hasDefaultPaymentMethod = $em->getRepository('IbtikarShareEconomyPayFortBundle:PfPaymentMethod')->hasDefaultPaymentMethod($user);
 
         $paymentMethod = new \Ibtikar\ShareEconomyPayFortBundle\Entity\PfPaymentMethod();
         $paymentMethod->setHolder($user);
@@ -70,6 +71,7 @@ class PayFortController extends Controller
         $paymentMethod->setPaymentOption($request->request->get('paymentOption'));
         $paymentMethod->setMerchantReference($request->request->get('merchantReference'));
         $paymentMethod->setFortId($request->request->get('fortId'));
+        $paymentMethod->setIsDefault(!$hasDefaultPaymentMethod);
 
         $validationMessages = $this->get('api_operations')->validateObject($paymentMethod);
 

@@ -18,10 +18,11 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  *          @ORM\UniqueConstraint(name="merchant_reference", columns={"merchant_reference"})
  *      },
  *      indexes={
- *          @ORM\Index(name="holder_id", columns={"holder_id"})
+ *          @ORM\Index(name="holder_id", columns={"holder_id"}),
+ *          @ORM\Index(name="is_default", columns={"is_default"})
  *      }
  * )
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="Ibtikar\ShareEconomyPayFortBundle\Repository\PfPaymentMethodRepository")
  * @UniqueEntity(fields={"tokenName"}, message="Token name already exist")
  * @UniqueEntity(fields={"fortId"}, message="Fort ID already exist")
  * @UniqueEntity(fields={"merchantReference"}, message="Merchant reference already exist")
@@ -101,6 +102,13 @@ class PfPaymentMethod
      * @ORM\Column(name="payment_option", type="string", length=50, nullable=true)
      */
     private $paymentOption;
+
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="is_default", type="boolean", nullable=true)
+     */
+    private $isDefault;
 
     /**
      * @var \DateTime
@@ -289,6 +297,30 @@ class PfPaymentMethod
     public function getPaymentOption()
     {
         return $this->paymentOption;
+    }
+
+    /**
+     * Set isDefault
+     *
+     * @param boolean $isDefault
+     *
+     * @return DishImage
+     */
+    public function setIsDefault($isDefault)
+    {
+        $this->isDefault = $isDefault;
+
+        return $this;
+    }
+
+    /**
+     * Get isDefault
+     *
+     * @return boolean
+     */
+    public function getIsDefault()
+    {
+        return $this->isDefault;
     }
 
     /**
