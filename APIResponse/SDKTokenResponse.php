@@ -9,7 +9,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *
  * @author Karim Shendy <kareem.elshendy@ibtikar.net.sa>
  */
-class SDKTokenResponse extends MainResponse
+class SDKTokenResponse extends \Ibtikar\ShareEconomyToolsBundle\APIResponse\MainResponse
 {
     /**
      * @Assert\NotBlank

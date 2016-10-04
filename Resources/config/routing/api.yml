@@ -4,5 +4,10 @@ ibtikar_share_economy_payfort_request_sdk_token:
 
 ibtikar_share_economy_payfort_add_payment_method:
     path:     /auth/payment-methods/add
-    defaults: { _controller: IbtikarShareEconomyPayFortBundle:API/PayFort:addPaymentMethod }
+    defaults: { _controller: IbtikarShareEconomyPayFortBundle:API/PaymentMethods:addPaymentMethod }
+    methods:  POST
+    
+ibtikar_share_economy_payfort_set_default_payment_method:
+    path:     /auth/payment-methods/set-default/{id}
+    defaults: { _controller: IbtikarShareEconomyPayFortBundle:API/PaymentMethods:setDefaultPaymentMethod }
     methods:  POST
