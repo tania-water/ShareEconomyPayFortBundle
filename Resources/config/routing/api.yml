@@ -1,23 +1,33 @@
 ibtikar_share_economy_payfort_request_sdk_token:
     path:     /request-sdk-token/{device_id}
     defaults: { _controller: IbtikarShareEconomyPayFortBundle:API/PayFort:requestSDKToken }
+    
+ibtikar_share_economy_payfort_list_payment_methods:
+    path:     /auth/payment-methods/list
+    defaults: { _controller: IbtikarShareEconomyPayFortBundle:API/PaymentMethods:list }
+    methods:  GET
+    
+ibtikar_share_economy_payfort_payment_method_details:
+    path:     /auth/payment-methods/details/{id}
+    defaults: { _controller: IbtikarShareEconomyPayFortBundle:API/PaymentMethods:details }
+    methods:  GET
 
 ibtikar_share_economy_payfort_add_payment_method:
     path:     /auth/payment-methods/add
-    defaults: { _controller: IbtikarShareEconomyPayFortBundle:API/PaymentMethods:addPaymentMethod }
+    defaults: { _controller: IbtikarShareEconomyPayFortBundle:API/PaymentMethods:add }
     methods:  POST
     
 ibtikar_share_economy_payfort_edit_payment_method:
     path:     /auth/payment-methods/edit/{id}
-    defaults: { _controller: IbtikarShareEconomyPayFortBundle:API/PaymentMethods:editPaymentMethod }
+    defaults: { _controller: IbtikarShareEconomyPayFortBundle:API/PaymentMethods:edit }
     methods:  POST
     
 ibtikar_share_economy_payfort_set_default_payment_method:
     path:     /auth/payment-methods/set-default/{id}
-    defaults: { _controller: IbtikarShareEconomyPayFortBundle:API/PaymentMethods:setDefaultPaymentMethod }
+    defaults: { _controller: IbtikarShareEconomyPayFortBundle:API/PaymentMethods:setDefault }
     methods:  POST
     
 ibtikar_share_economy_payfort_delete_payment_method:
     path:     /auth/payment-methods/delete
-    defaults: { _controller: IbtikarShareEconomyPayFortBundle:API/PaymentMethods:deletePaymentMethod }
+    defaults: { _controller: IbtikarShareEconomyPayFortBundle:API/PaymentMethods:delete }
     methods:  POST

@@ -90,7 +90,7 @@ class PfPaymentMethod
     /**
      * @var string
      *
-     * @ORM\Column(name="token_name", type="string", length=255, nullable=false)
+     * @ORM\Column(name="token_name", type="string", length=255, nullable=true)
      *
      * @Assert\NotBlank(message="fill_mandatory_field")
      */

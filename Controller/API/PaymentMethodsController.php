@@ -36,7 +36,7 @@ class PaymentMethodsController extends Controller
      * @author Karim Shendy <kareem.elshendy@ibtikar.net.sa>
      * @return JsonResponse
      */
-    public function addPaymentMethodAction(Request $request)
+    public function addAction(Request $request)
     {
         $em                      = $this->getDoctrine()->getManager();
         $user                    = $this->getUser();
@@ -90,18 +90,18 @@ class PaymentMethodsController extends Controller
      *  statusCodes = {
      *      200="Returned on success",
      *      422="Returned if there is a validation error in the sent data",
-     *      304="Access denied",
+     *      403="Access denied",
      *  },
      *  responseMap = {
      *      200="Ibtikar\ShareEconomyToolsBundle\APIResponse\Success",
      *      422="Ibtikar\ShareEconomyToolsBundle\APIResponse\ValidationErrors",
-     *      304="Ibtikar\ShareEconomyToolsBundle\APIResponse\AccessDenied"
+     *      403="Ibtikar\ShareEconomyToolsBundle\APIResponse\AccessDenied"
      *  }
      * )
      * @author Karim Shendy <kareem.elshendy@ibtikar.net.sa>
      * @return JsonResponse
      */
-    public function editPaymentMethodAction(Request $request, $id)
+    public function editAction(Request $request, $id)
     {
         $em            = $this->getDoctrine()->getManager();
         $user          = $this->getUser();
@@ -157,17 +157,17 @@ class PaymentMethodsController extends Controller
      *  section="PayFort",
      *  statusCodes = {
      *      200="Returned on success",
-     *      304="Access denied",
+     *      403="Access denied",
      *  },
      *  responseMap = {
      *      200="Ibtikar\ShareEconomyToolsBundle\APIResponse\Success",
-     *      304="Ibtikar\ShareEconomyToolsBundle\APIResponse\AccessDenied"
+     *      403="Ibtikar\ShareEconomyToolsBundle\APIResponse\AccessDenied"
      *  }
      * )
      * @author Karim Shendy <kareem.elshendy@ibtikar.net.sa>
      * @return JsonResponse
      */
-    public function setDefaultPaymentMethodAction(Request $request, $id)
+    public function setDefaultAction(Request $request, $id)
     {
         $em            = $this->getDoctrine()->getManager();
         $user          = $this->getUser();
@@ -203,17 +203,17 @@ class PaymentMethodsController extends Controller
      *  },
      *  statusCodes = {
      *      200="Returned on success",
-     *      304="Access denied",
+     *      403="Access denied",
      *  },
      *  responseMap = {
      *      200="Ibtikar\ShareEconomyToolsBundle\APIResponse\Success",
-     *      304="Ibtikar\ShareEconomyToolsBundle\APIResponse\AccessDenied"
+     *      403="Ibtikar\ShareEconomyToolsBundle\APIResponse\AccessDenied"
      *  }
      * )
      * @author Karim Shendy <kareem.elshendy@ibtikar.net.sa>
      * @return JsonResponse
      */
-    public function deletePaymentMethodAction(Request $request)
+    public function deleteAction(Request $request)
     {
         $em            = $this->getDoctrine()->getManager();
         $user          = $this->getUser();
@@ -241,6 +241,89 @@ class PaymentMethodsController extends Controller
             $em->flush();
 
             $output = new ToolsBundleAPIResponses\Success();
+        }
+
+        return new JsonResponse($output);
+    }
+
+    /**
+     * list user payment methods
+     *
+     * @ApiDoc(
+     *  section="PayFort",
+     *  statusCodes = {
+     *      200="Returned on success",
+     *  },
+     *  responseMap = {
+     *      200="Ibtikar\ShareEconomyToolsBundle\APIResponse\ItemsList",
+     *  }
+     * )
+     * @author Karim Shendy <kareem.elshendy@ibtikar.net.sa>
+     * @return JsonResponse
+     */
+    public function listAction(Request $request)
+    {
+        $em             = $this->getDoctrine()->getManager();
+        $user           = $this->getUser();
+        $paymentMethods = $em->getRepository('IbtikarShareEconomyPayFortBundle:PfPaymentMethod')->findBy(['holder' => $user]);
+        $output         = new ToolsBundleAPIResponses\ItemsList();
+
+        if (count($paymentMethods)) {
+            foreach ($paymentMethods as $paymentMethod) {
+                $credit                    = new \Ibtikar\ShareEconomyPayFortBundle\APIResponse\PaymentMethod();
+                $credit->id                = $paymentMethod->getId();
+                $credit->fortId            = $paymentMethod->getFortId();
+                $credit->cardNumber        = $paymentMethod->getCardNumber();
+                $credit->expiryDate        = $paymentMethod->getExpiryDate();
+                $credit->merchantReference = $paymentMethod->getMerchantReference();
+                $credit->tokenName         = $paymentMethod->getTokenName();
+                $credit->paymentOption     = $paymentMethod->getPaymentOption();
+                $credit->isDefault         = $paymentMethod->getIsDefault();
+
+                $output->items[] = $credit;
+            }
+        }
+
+        return new JsonResponse($output);
+    }
+
+    /**
+     * list user payment methods
+     *
+     * @ApiDoc(
+     *  section="PayFort",
+     *  statusCodes = {
+     *      200="Returned on success",
+     *      403="Access denied"
+     *  },
+     *  responseMap = {
+     *      200="Ibtikar\ShareEconomyToolsBundle\APIResponse\PaymentMethodDetailsResponse",
+     *      403="Ibtikar\ShareEconomyToolsBundle\APIResponse\AccessDenied"
+     *  }
+     * )
+     * @author Karim Shendy <kareem.elshendy@ibtikar.net.sa>
+     * @return JsonResponse
+     */
+    public function detailsAction(Request $request, $id)
+    {
+        $em            = $this->getDoctrine()->getManager();
+        $user          = $this->getUser();
+        $paymentMethod = $em->getRepository('IbtikarShareEconomyPayFortBundle:PfPaymentMethod')->find($id);
+
+        if (!$paymentMethod) {
+            $output = new ToolsBundleAPIResponses\NotFound();
+        } elseif ($paymentMethod->getHolder()->getId() !== $user->getId()) {
+            $output = new ToolsBundleAPIResponses\AccessDenied();
+        } else {
+            $output                    = new \Ibtikar\ShareEconomyPayFortBundle\APIResponse\PaymentMethodDetailsResponse();
+            $output->id                = $paymentMethod->getId();
+            $output->fortId            = $paymentMethod->getFortId();
+            $output->cardNumber        = $paymentMethod->getCardNumber();
+            $output->expiryDate        = $paymentMethod->getExpiryDate();
+            $output->merchantReference = $paymentMethod->getMerchantReference();
+            $output->tokenName         = $paymentMethod->getTokenName();
+            $output->paymentOption     = $paymentMethod->getPaymentOption();
+            $output->isDefault         = $paymentMethod->getIsDefault();
         }
 
         return new JsonResponse($output);
