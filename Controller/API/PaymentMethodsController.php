@@ -90,10 +90,12 @@ class PaymentMethodsController extends Controller
      *  statusCodes = {
      *      200="Returned on success",
      *      422="Returned if there is a validation error in the sent data",
+     *      304="Access denied",
      *  },
      *  responseMap = {
      *      200="Ibtikar\ShareEconomyToolsBundle\APIResponse\Success",
      *      422="Ibtikar\ShareEconomyToolsBundle\APIResponse\ValidationErrors",
+     *      304="Ibtikar\ShareEconomyToolsBundle\APIResponse\AccessDenied"
      *  }
      * )
      * @author Karim Shendy <kareem.elshendy@ibtikar.net.sa>
@@ -106,9 +108,9 @@ class PaymentMethodsController extends Controller
         $paymentMethod = $em->getRepository('IbtikarShareEconomyPayFortBundle:PfPaymentMethod')->find($id);
 
         if (!$paymentMethod) {
-            return new JsonResponse(new ToolsBundleAPIResponses\NotFound());
+            $output = new ToolsBundleAPIResponses\NotFound();
         } elseif ($paymentMethod->getHolder()->getId() !== $user->getId()) {
-            $output = new JsonResponse(new ToolsBundleAPIResponses\AccessDenied());
+            $output = new ToolsBundleAPIResponses\AccessDenied();
         } else {
             $paymentMethod->setTokenName(null);
 
@@ -153,7 +155,14 @@ class PaymentMethodsController extends Controller
      *
      * @ApiDoc(
      *  section="PayFort",
-     *  output="Ibtikar\ShareEconomyToolsBundle\APIResponse\Success"
+     *  statusCodes = {
+     *      200="Returned on success",
+     *      304="Access denied",
+     *  },
+     *  responseMap = {
+     *      200="Ibtikar\ShareEconomyToolsBundle\APIResponse\Success",
+     *      304="Ibtikar\ShareEconomyToolsBundle\APIResponse\AccessDenied"
+     *  }
      * )
      * @author Karim Shendy <kareem.elshendy@ibtikar.net.sa>
      * @return JsonResponse
@@ -165,9 +174,9 @@ class PaymentMethodsController extends Controller
         $paymentMethod = $em->getRepository('IbtikarShareEconomyPayFortBundle:PfPaymentMethod')->find($id);
 
         if (!$paymentMethod) {
-            $output = new JsonResponse(new ToolsBundleAPIResponses\NotFound());
+            $output = new ToolsBundleAPIResponses\NotFound();
         } elseif ($paymentMethod->getHolder()->getId() !== $user->getId()) {
-            $output = new JsonResponse(new ToolsBundleAPIResponses\AccessDenied());
+            $output = new ToolsBundleAPIResponses\AccessDenied();
         } else {
             $defaultPaymentMethod = $em->getRepository('IbtikarShareEconomyPayFortBundle:PfPaymentMethod')->findOneBy(['holder' => $user, 'isDefault' => true]);
 
@@ -176,6 +185,59 @@ class PaymentMethodsController extends Controller
             }
 
             $paymentMethod->setIsDefault(true);
+            $em->flush();
+
+            $output = new ToolsBundleAPIResponses\Success();
+        }
+
+        return new JsonResponse($output);
+    }
+
+    /**
+     * delete payment method
+     *
+     * @ApiDoc(
+     *  section="PayFort",
+     *  parameters={
+     *      {"name"="id", "dataType"="integer", "required"=true},
+     *  },
+     *  statusCodes = {
+     *      200="Returned on success",
+     *      304="Access denied",
+     *  },
+     *  responseMap = {
+     *      200="Ibtikar\ShareEconomyToolsBundle\APIResponse\Success",
+     *      304="Ibtikar\ShareEconomyToolsBundle\APIResponse\AccessDenied"
+     *  }
+     * )
+     * @author Karim Shendy <kareem.elshendy@ibtikar.net.sa>
+     * @return JsonResponse
+     */
+    public function deletePaymentMethodAction(Request $request)
+    {
+        $em            = $this->getDoctrine()->getManager();
+        $user          = $this->getUser();
+        $paymentMethod = $em->getRepository('IbtikarShareEconomyPayFortBundle:PfPaymentMethod')->find($request->request->get('id'));
+
+        if (!$paymentMethod) {
+            $output = new ToolsBundleAPIResponses\NotFound();
+        } elseif ($paymentMethod->getHolder()->getId() !== $user->getId()) {
+            $output = new ToolsBundleAPIResponses\AccessDenied();
+        } else {
+            if ($paymentMethod->getIsDefault()) {
+                // find latest added payment method and set it as default if found
+                $candidateDefaultPaymentMethod = $em->getRepository('IbtikarShareEconomyPayFortBundle:PfPaymentMethod')->getLatestAddedPaymentMethodExcept($paymentMethod);
+
+                if ($candidateDefaultPaymentMethod) {
+                    $candidateDefaultPaymentMethod->setIsDefault(true);
+                }
+            }
+
+            $paymentMethod->setTokenName(null);
+            $paymentMethod->setIsDefault(false);
+            $em->flush();
+
+            $em->remove($paymentMethod);
             $em->flush();
 
             $output = new ToolsBundleAPIResponses\Success();
