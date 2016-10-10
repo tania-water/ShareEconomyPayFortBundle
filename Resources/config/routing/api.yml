@@ -23,7 +23,7 @@ ibtikar_share_economy_payfort_edit_payment_method:
     methods:  POST
     
 ibtikar_share_economy_payfort_set_default_payment_method:
-    path:     /auth/payment-methods/set-default/{id}
+    path:     /auth/payment-methods/set-default
     defaults: { _controller: IbtikarShareEconomyPayFortBundle:API/PaymentMethods:setDefault }
     methods:  POST
     
