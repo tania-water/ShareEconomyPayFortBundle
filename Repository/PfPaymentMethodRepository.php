@@ -47,4 +47,14 @@ class PfPaymentMethodRepository extends \Doctrine\ORM\EntityRepository
                 ->getQuery()
                 ->getOneOrNullResult();
     }
+
+    /**
+     * @author Mahmoud Mostafa <mahmoud.mostafa@ibtikar.net.sa>
+     * @param string $userId
+     * @return boolean
+     */
+    public function clearUserDefaultPaymentMethod($userId)
+    {
+        return $this->getEntityManager()->createQuery('UPDATE ' . $this->getEntityName() . ' pfp SET pfp.isDefault = 0 WHERE pfp.holder = :userId')->execute(array('userId' => $userId));
+    }
 }
