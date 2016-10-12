@@ -7,6 +7,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use Ibtikar\ShareEconomyToolsBundle\APIResponse as ToolsBundleAPIResponses;
+use Ibtikar\ShareEconomyPayFortBundle\Entity\PfPaymentMethod;
 
 class PaymentMethodsController extends Controller
 {
@@ -29,7 +30,7 @@ class PaymentMethodsController extends Controller
      *      422="Returned if there is a validation error in the sent data",
      *  },
      *  responseMap = {
-     *      200="Ibtikar\ShareEconomyToolsBundle\APIResponse\Success",
+     *      200="Ibtikar\ShareEconomyPayFortBundle\APIResponse\PaymentMethodDetailsResponse",
      *      422="Ibtikar\ShareEconomyToolsBundle\APIResponse\ValidationErrors",
      *  }
      * )
@@ -42,7 +43,7 @@ class PaymentMethodsController extends Controller
         $user                    = $this->getUser();
         $hasDefaultPaymentMethod = $em->getRepository('IbtikarShareEconomyPayFortBundle:PfPaymentMethod')->hasDefaultPaymentMethod($user);
 
-        $paymentMethod = new \Ibtikar\ShareEconomyPayFortBundle\Entity\PfPaymentMethod();
+        $paymentMethod = new PfPaymentMethod();
         $paymentMethod->setHolder($user);
         $paymentMethod->setCardNumber($request->request->get('cardNumber'));
         $paymentMethod->setExpiryDate($request->request->get('expiryDate'));
@@ -63,7 +64,7 @@ class PaymentMethodsController extends Controller
             try {
                 $em->flush();
 
-                $output = new ToolsBundleAPIResponses\Success();
+                $output = $this->getPaymentMethodDetailsResponse($paymentMethod);
             } catch (\Exception $exc) {
                 $output = new ToolsBundleAPIResponses\InternalServerError();
 
@@ -93,7 +94,7 @@ class PaymentMethodsController extends Controller
      *      403="Access denied",
      *  },
      *  responseMap = {
-     *      200="Ibtikar\ShareEconomyToolsBundle\APIResponse\Success",
+     *      200="Ibtikar\ShareEconomyPayFortBundle\APIResponse\PaymentMethodDetailsResponse",
      *      422="Ibtikar\ShareEconomyToolsBundle\APIResponse\ValidationErrors",
      *      403="Ibtikar\ShareEconomyToolsBundle\APIResponse\AccessDenied"
      *  }
@@ -114,7 +115,7 @@ class PaymentMethodsController extends Controller
         } else {
             $paymentMethod->setTokenName(null);
 
-            $newPaymentMethod = new \Ibtikar\ShareEconomyPayFortBundle\Entity\PfPaymentMethod();
+            $newPaymentMethod = new PfPaymentMethod();
             $newPaymentMethod->setHolder($user);
             $newPaymentMethod->setCardNumber($request->request->get('cardNumber'));
             $newPaymentMethod->setExpiryDate($request->request->get('expiryDate'));
@@ -138,7 +139,7 @@ class PaymentMethodsController extends Controller
                     $em->remove($paymentMethod);
                     $em->flush();
 
-                    $output = new ToolsBundleAPIResponses\Success();
+                    $output = $this->getPaymentMethodDetailsResponse($newPaymentMethod);
                 } catch (\Exception $exc) {
                     $output = new ToolsBundleAPIResponses\InternalServerError();
 
@@ -330,17 +331,29 @@ class PaymentMethodsController extends Controller
         } elseif ($paymentMethod->getHolder()->getId() !== $user->getId()) {
             $output = new ToolsBundleAPIResponses\AccessDenied();
         } else {
-            $output                    = new \Ibtikar\ShareEconomyPayFortBundle\APIResponse\PaymentMethodDetailsResponse();
-            $output->id                = $paymentMethod->getId();
-            $output->fortId            = $paymentMethod->getFortId();
-            $output->cardNumber        = $paymentMethod->getCardNumber();
-            $output->expiryDate        = $paymentMethod->getExpiryDate();
-            $output->merchantReference = $paymentMethod->getMerchantReference();
-            $output->tokenName         = $paymentMethod->getTokenName();
-            $output->paymentOption     = $paymentMethod->getPaymentOption();
-            $output->isDefault         = $paymentMethod->getIsDefault();
+            $output = $this->getPaymentMethodDetailsResponse($paymentMethod);
         }
 
         return new JsonResponse($output);
+    }
+
+    /**
+     *
+     * @param PfPaymentMethod $paymentMethod
+     * @return \Ibtikar\ShareEconomyPayFortBundle\APIResponse\PaymentMethodDetailsResponse
+     */
+    private function getPaymentMethodDetailsResponse(PfPaymentMethod $paymentMethod)
+    {
+        $output                    = new \Ibtikar\ShareEconomyPayFortBundle\APIResponse\PaymentMethodDetailsResponse();
+        $output->id                = $paymentMethod->getId();
+        $output->fortId            = $paymentMethod->getFortId();
+        $output->cardNumber        = $paymentMethod->getCardNumber();
+        $output->expiryDate        = $paymentMethod->getExpiryDate();
+        $output->merchantReference = $paymentMethod->getMerchantReference();
+        $output->tokenName         = $paymentMethod->getTokenName();
+        $output->paymentOption     = $paymentMethod->getPaymentOption();
+        $output->isDefault         = $paymentMethod->getIsDefault();
+
+        return $output;
     }
 }
