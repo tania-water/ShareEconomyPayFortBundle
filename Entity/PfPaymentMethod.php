@@ -13,9 +13,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  * @ORM\Table(
  *      name="pf_payment_method",
  *      uniqueConstraints={
- *          @ORM\UniqueConstraint(name="token_name", columns={"token_name"}),
- *          @ORM\UniqueConstraint(name="fort_id", columns={"fort_id"}),
- *          @ORM\UniqueConstraint(name="merchant_reference", columns={"merchant_reference"})
+ *          @ORM\UniqueConstraint(name="token_name", columns={"token_name", "holder_id"})
  *      },
  *      indexes={
  *          @ORM\Index(name="holder_id", columns={"holder_id"}),
@@ -23,9 +21,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  *      }
  * )
  * @ORM\Entity(repositoryClass="Ibtikar\ShareEconomyPayFortBundle\Repository\PfPaymentMethodRepository")
- * @UniqueEntity(fields={"tokenName"}, message="Token name already exist")
- * @UniqueEntity(fields={"fortId"}, message="Fort ID already exist")
- * @UniqueEntity(fields={"merchantReference"}, message="Merchant reference already exist")
+ * @UniqueEntity(fields={"tokenName", "holder"}, message="Token name already exist")
  * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  */
 class PfPaymentMethod
