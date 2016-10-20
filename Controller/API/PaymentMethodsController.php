@@ -41,7 +41,6 @@ class PaymentMethodsController extends Controller
     {
         $em                      = $this->getDoctrine()->getManager();
         $user                    = $this->getUser();
-        $hasDefaultPaymentMethod = $em->getRepository('IbtikarShareEconomyPayFortBundle:PfPaymentMethod')->hasDefaultPaymentMethod($user);
 
         $paymentMethod = new PfPaymentMethod();
         $paymentMethod->setHolder($user);
@@ -51,7 +50,7 @@ class PaymentMethodsController extends Controller
         $paymentMethod->setPaymentOption($request->request->get('paymentOption'));
         $paymentMethod->setMerchantReference($request->request->get('merchantReference'));
         $paymentMethod->setFortId($request->request->get('fortId'));
-        $paymentMethod->setIsDefault(!$hasDefaultPaymentMethod);
+        $paymentMethod->setIsDefault(false);
 
         $validationMessages = $this->get('api_operations')->validateObject($paymentMethod);
 

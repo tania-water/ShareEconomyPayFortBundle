@@ -12,24 +12,6 @@ class PfPaymentMethodRepository extends \Doctrine\ORM\EntityRepository
 {
 
     /**
-     * @param  $holder
-     * @return integer
-     */
-    public function hasDefaultPaymentMethod($holder)
-    {
-        $count = $this->createQueryBuilder('pm')
-            ->select('count(pm.id)')
-            ->where('pm.holder = :holder')
-            ->andWhere('pm.isDefault = :yes')
-            ->setParameter('holder', $holder)
-            ->setParameter('yes', true)
-            ->getQuery()
-            ->getSingleScalarResult();
-
-        return $count > 0;
-    }
-
-    /**
      * get latest payment method related to user except the sent one
      *
      * @param \Ibtikar\ShareEconomyPayFortBundle\Entity\PfPaymentMethod $deletedPaymentMethod
