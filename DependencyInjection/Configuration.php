@@ -77,6 +77,9 @@ class Configuration implements ConfigurationInterface
                     ->scalarNode('paymentmethod_holder_class')
                         ->cannotBeEmpty()
                     ->end()
+                    ->booleanNode('prevent_last_payment_method_removal')
+                        ->defaultFalse()
+                    ->end()
                 ->end();
 
         return $treeBuilder;

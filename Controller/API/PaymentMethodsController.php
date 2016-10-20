@@ -39,8 +39,8 @@ class PaymentMethodsController extends Controller
      */
     public function addAction(Request $request)
     {
-        $em                      = $this->getDoctrine()->getManager();
-        $user                    = $this->getUser();
+        $em   = $this->getDoctrine()->getManager();
+        $user = $this->getUser();
 
         $paymentMethod = new PfPaymentMethod();
         $paymentMethod->setHolder($user);
@@ -230,24 +230,30 @@ class PaymentMethodsController extends Controller
      */
     public function deleteAction(Request $request)
     {
-        $em            = $this->getDoctrine()->getManager();
-        $user          = $this->getUser();
-        $paymentMethod = $em->getRepository('IbtikarShareEconomyPayFortBundle:PfPaymentMethod')->find($request->request->get('id'));
+        $em                      = $this->getDoctrine()->getManager();
+        $user                    = $this->getUser();
+        $paymentMethod           = $em->getRepository('IbtikarShareEconomyPayFortBundle:PfPaymentMethod')->find($request->request->get('id'));
+        $preventLastDeletion     = $this->getParameter('ibtikar_share_economy_pay_fort.prevent_last_payment_method_removal');
+        $userPaymentMethodsCount = $em->getRepository('IbtikarShareEconomyPayFortBundle:PfPaymentMethod')->countHolderPaymentMethods($user);
 
+        // payment method not found
         if (!$paymentMethod) {
             $output = new ToolsBundleAPIResponses\NotFound();
-        } elseif ($paymentMethod->getHolder()->getId() !== $user->getId()) {
+        }
+        // not the owner of the payment method
+        elseif ($paymentMethod->getHolder()->getId() !== $user->getId()) {
             $output = new ToolsBundleAPIResponses\AccessDenied();
+        }
+        // cannot delete the default payment method
+        elseif ($paymentMethod->getIsDefault()) {
+            $output          = new ToolsBundleAPIResponses\Fail();
+            $output->message = $this->get('translator')->trans('cannot_delete_default_payment_method');
+        }
+        // if deletion of the last payment method prevented and this is the last one then do not remove
+        elseif ($preventLastDeletion && $userPaymentMethodsCount == 1) {
+            $output          = new ToolsBundleAPIResponses\Fail();
+            $output->message = $this->get('translator')->trans('cannot_delete_last_payment_method');
         } else {
-            if ($paymentMethod->getIsDefault()) {
-                // find latest added payment method and set it as default if found
-                $candidateDefaultPaymentMethod = $em->getRepository('IbtikarShareEconomyPayFortBundle:PfPaymentMethod')->getLatestAddedPaymentMethodExcept($paymentMethod);
-
-                if ($candidateDefaultPaymentMethod) {
-                    $candidateDefaultPaymentMethod->setIsDefault(true);
-                }
-            }
-
             $paymentMethod->setTokenName(null);
             $paymentMethod->setIsDefault(false);
             $em->flush();

@@ -12,22 +12,17 @@ class PfPaymentMethodRepository extends \Doctrine\ORM\EntityRepository
 {
 
     /**
-     * get latest payment method related to user except the sent one
-     *
-     * @param \Ibtikar\ShareEconomyPayFortBundle\Entity\PfPaymentMethod $deletedPaymentMethod
-     * @return null|\Ibtikar\ShareEconomyPayFortBundle\Entity\PfPaymentMethod
+     * @param  $holder
+     * @return integer
      */
-    public function getLatestAddedPaymentMethodExcept($deletedPaymentMethod)
+    public function countHolderPaymentMethods($holder)
     {
         return $this->createQueryBuilder('pm')
+                ->select('count(pm.id)')
                 ->where('pm.holder = :holder')
-                ->andWhere('pm.id != :deleted_id')
-                ->setParameter('holder', $deletedPaymentMethod->getHolder())
-                ->setParameter('deleted_id', $deletedPaymentMethod->getId())
-                ->orderBy('pm.id', 'DESC')
-                ->setMaxResults(1)
+                ->setParameter('holder', $holder)
                 ->getQuery()
-                ->getOneOrNullResult();
+                ->getSingleScalarResult();
     }
 
     /**
