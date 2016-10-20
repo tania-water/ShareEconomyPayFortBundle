@@ -26,6 +26,9 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  */
 class PfPaymentMethod
 {
+
+    use \Ibtikar\ShareEconomyToolsBundle\Entity\TrackableTrait;
+
     /**
      * @var integer
      *
@@ -105,14 +108,6 @@ class PfPaymentMethod
      * @ORM\Column(name="is_default", type="boolean", nullable=true)
      */
     private $isDefault;
-
-    /**
-     * @var \DateTime
-     *
-     * @ORM\Column(name="created_at", type="datetime", nullable=true)
-     * @Gedmo\Timestampable(on="create")
-     */
-    private $createdAt;
 
     /**
      * @var \DateTime
@@ -317,30 +312,6 @@ class PfPaymentMethod
     public function getIsDefault()
     {
         return $this->isDefault;
-    }
-
-    /**
-     * Set createdAt
-     *
-     * @param \DateTime $createdAt
-     *
-     * @return PfPaymentMethod
-     */
-    public function setCreatedAt($createdAt)
-    {
-        $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
-    /**
-     * Get createdAt
-     *
-     * @return \DateTime
-     */
-    public function getCreatedAt()
-    {
-        return $this->createdAt;
     }
 
     /**
