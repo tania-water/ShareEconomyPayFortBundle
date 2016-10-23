@@ -78,7 +78,7 @@ class Configuration implements ConfigurationInterface
                         ->cannotBeEmpty()
                     ->end()
                     ->booleanNode('prevent_last_payment_method_removal')
-                        ->defaultFalse()
+                        ->defaultTrue()
                     ->end()
                 ->end();
 
