@@ -18,7 +18,7 @@ class Version20161020122847 extends AbstractMigration
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() != 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('ALTER TABLE pf_payment_method ADD updated_at DATETIME NOT NULL, ADD version INT DEFAULT 1 NOT NULL, CHANGE created_at created_at DATETIME NOT NULL');
+        $this->addSql('ALTER TABLE pf_payment_method ADD updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, ADD version INT DEFAULT 1 NOT NULL, CHANGE created_at created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP');
     }
 
     /**
