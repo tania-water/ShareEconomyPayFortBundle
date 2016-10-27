@@ -53,7 +53,7 @@ class PfPaymentMethod
     /**
      * @var string
      *
-     * @ORM\Column(name="fort_id", type="string", length=255, nullable=false)
+     * @ORM\Column(name="fort_id", type="string", length=190, nullable=false)
      *
      * @Assert\NotBlank(message="fill_mandatory_field")
      */
@@ -89,7 +89,7 @@ class PfPaymentMethod
     /**
      * @var string
      *
-     * @ORM\Column(name="token_name", type="string", length=255, nullable=true)
+     * @ORM\Column(name="token_name", type="string", length=190, nullable=true)
      *
      * @Assert\NotBlank(message="fill_mandatory_field")
      */
