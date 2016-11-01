@@ -85,6 +85,7 @@ Installation steps
             orm:
                 resolve_target_entities:
                     Ibtikar\ShareEconomyPayFortBundle\Entity\PfPaymentMethodHolderInterface: {your holder class full qualified name space. ex: AppBundle\Entity\User}
+                    Ibtikar\ShareEconomyPayFortBundle\Entity\PfTransactionInvoiceInterface: {your invoice class full qualified name space. ex: AppBundle\Entity\Invoice}
 
 9.Now you can use the service as following:
     

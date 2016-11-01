@@ -1,6 +1,7 @@
 <?php
 
 namespace Ibtikar\ShareEconomyPayFortBundle\Entity;
+
 use Doctrine\ORM\Mapping as ORM;
 
 trait PfPaymentMethodHolderTrait
@@ -26,7 +27,7 @@ trait PfPaymentMethodHolderTrait
     }
 
     /**
-     * Add PfPaymentMethod
+     * remove PfPaymentMethod
      *
      * @param PfPaymentMethod $pfPaymentMethod
      */

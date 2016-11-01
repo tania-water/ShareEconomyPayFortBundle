@@ -28,7 +28,6 @@ class PfPaymentMethod
 {
 
     use \Ibtikar\ShareEconomyToolsBundle\Entity\TrackableTrait;
-
     /**
      * @var integer
      *
@@ -39,21 +38,9 @@ class PfPaymentMethod
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="PfPaymentMethodHolderInterface", inversedBy="pfPaymentMethods")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="holder_id", referencedColumnName="id", nullable=false)
-     * })
-     * @var PfPaymentMethodHolderInterface
-     *
-     * @Assert\NotBlank(message="fill_mandatory_field")
-     * @Assert\Valid
-     */
-    private $holder;
-
-    /**
      * @var string
      *
-     * @ORM\Column(name="fort_id", type="string", length=190, nullable=false)
+     * @ORM\Column(name="fort_id", type="string", length=255, nullable=false)
      *
      * @Assert\NotBlank(message="fill_mandatory_field")
      */
@@ -89,7 +76,7 @@ class PfPaymentMethod
     /**
      * @var string
      *
-     * @ORM\Column(name="token_name", type="string", length=190, nullable=true)
+     * @ORM\Column(name="token_name", type="string", length=255, nullable=true)
      *
      * @Assert\NotBlank(message="fill_mandatory_field")
      */
@@ -115,6 +102,33 @@ class PfPaymentMethod
      * @ORM\Column(name="deleted_at", type="datetime", nullable=true)
      */
     private $deletedAt;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="PfPaymentMethodHolderInterface", inversedBy="pfPaymentMethods")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="holder_id", referencedColumnName="id", nullable=false)
+     * })
+     * @var PfPaymentMethodHolderInterface
+     *
+     * @Assert\NotBlank(message="fill_mandatory_field")
+     * @Assert\Valid
+     */
+    private $holder;
+
+    /**
+     * @var \Ibtikar\ShareEconomyPayFortBundle\Entity\PfTransaction
+     *
+     * @ORM\OneToMany(targetEntity="PfTransaction", mappedBy="paymentMethod")
+     */
+    private $transactions;
+
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->transactions = new \Doctrine\Common\Collections\ArrayCollection();
+    }
 
     /**
      * Get id
@@ -295,7 +309,7 @@ class PfPaymentMethod
      *
      * @param boolean $isDefault
      *
-     * @return DishImage
+     * @return PfPaymentMethod
      */
     public function setIsDefault($isDefault)
     {
@@ -336,5 +350,39 @@ class PfPaymentMethod
     public function getDeletedAt()
     {
         return $this->deletedAt;
+    }
+
+    /**
+     * Add transaction
+     *
+     * @param PfTransaction $transaction
+     *
+     * @return PfPaymentMethod
+     */
+    public function addTransaction(PfTransaction $transaction)
+    {
+        $this->transactions[] = $transaction;
+
+        return $this;
+    }
+
+    /**
+     * Remove transaction
+     *
+     * @param PfTransaction $transaction
+     */
+    public function removeTransaction(PfTransaction $transaction)
+    {
+        $this->transactions->removeElement($transaction);
+    }
+
+    /**
+     * Get transactions
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getTransactions()
+    {
+        return $this->transactions;
     }
 }

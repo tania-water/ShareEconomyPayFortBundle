@@ -5,11 +5,13 @@ namespace Ibtikar\ShareEconomyPayFortBundle\Listener;
 use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
 use Doctrine\ORM\Events;
 use Ibtikar\ShareEconomyPayFortBundle\Entity\PfPaymentMethod;
+use Ibtikar\ShareEconomyPayFortBundle\Entity\PfTransaction;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class DynamicRelationSubscriber implements EventSubscriberInterface
 {
-    const INTERFACE_FQNS = 'Ibtikar\ShareEconomyPayFortBundle\Entity\PfPaymentMethodHolderInterface';
+    const PF_PAYMENT_METHOD_HOLDER_INTERFACE_FQNS = 'Ibtikar\ShareEconomyPayFortBundle\Entity\PfPaymentMethodHolderInterface';
+    const PF_TRANSACTION_INVOICE_INTERFACE_FQNS   = 'Ibtikar\ShareEconomyPayFortBundle\Entity\PfTransactionInvoiceInterface';
 
     /**
      * {@inheritDoc}
@@ -29,20 +31,18 @@ class DynamicRelationSubscriber implements EventSubscriberInterface
         // the $metadata is the whole mapping info for this class
         $metadata = $eventArgs->getClassMetadata();
 
-        if (!in_array(self::INTERFACE_FQNS, class_implements($metadata->getName()))) {
-            return;
+        if (in_array(self::PF_PAYMENT_METHOD_HOLDER_INTERFACE_FQNS, class_implements($metadata->getName()))) {
+            $metadata->mapOneToMany(array(
+                'targetEntity' => PfPaymentMethod::CLASS,
+                'mappedBy'     => 'holder',
+                'cascade'      => ['persist', 'remove']
+            ));
+        } elseif (in_array(self::PF_TRANSACTION_INVOICE_INTERFACE_FQNS, class_implements($metadata->getName()))) {
+            $metadata->mapOneToMany(array(
+                'targetEntity' => PfTransaction::CLASS,
+                'mappedBy'     => 'invoice',
+                'cascade'      => ['persist', 'remove']
+            ));
         }
-
-        $namingStrategy = $eventArgs
-            ->getManager()
-            ->getConfiguration()
-            ->getNamingStrategy()
-        ;
-
-        $metadata->mapOneToMany(array(
-            'targetEntity' => PfPaymentMethod::CLASS,
-            'mappedBy'     => 'holder',
-            'cascade'      => ['persist', 'remove']
-        ));
     }
 }

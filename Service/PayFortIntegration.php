@@ -22,6 +22,7 @@ class PayFortIntegration
     private $baseMerchantPageURL;
     private $baseApiURL;
     private $language = 'en';
+    private $currency;
 
     const SANDBOX_MODE                 = "sandbox";
     const PRODUCTION_MODE              = "production";
@@ -38,6 +39,7 @@ class PayFortIntegration
         $this->templating = $templating;
         $this->apiCaller  = $apiCaller;
         $this->config     = $config;
+        $this->currency   = $config['currency'];
         $this->mode       = $config['environment'];
 
         if ($config['environment'] == self::PRODUCTION_MODE) {
@@ -120,8 +122,9 @@ class PayFortIntegration
     }
 
     /**
+     * make new API request
      *
-     * @param array $parameters
+     * @param array $params
      * @return array
      * @throws \Exception
      */
@@ -129,7 +132,7 @@ class PayFortIntegration
     {
         $parameters = $this->addDefaultParams($params);
 
-        $response = $this->apiCaller->call(new HttpPostJsonBody($this->baseApiURL, $parameters, true, [ 'HTTPHEADER' => ['Content-Type:application/json']]));
+        $response = $this->apiCaller->call(new HttpPostJsonBody($this->baseApiURL, $parameters, true, ['HTTPHEADER' => ['Content-Type:application/json']]));
 
         // verify the request signature
         if (!$this->isValidResponse($response)) {
@@ -140,6 +143,7 @@ class PayFortIntegration
     }
 
     /**
+     * store new credit card in the payment gateway
      *
      * @param type $cardNumber
      * @param type $cardSecurityCode
@@ -161,6 +165,7 @@ class PayFortIntegration
     }
 
     /**
+     * request new SDK token
      *
      * @param type $deviceID
      * @return type
@@ -210,12 +215,21 @@ class PayFortIntegration
         return $this->templating->render('IbtikarShareEconomyPayFortBundle:Default:tokenizationForm.html.twig', ['formParams' => $formParams, 'formAction' => $this->baseMerchantPageURL]);
     }
 
+    /**
+     *
+     * @param type $email
+     * @param type $token_name
+     * @param type $amount
+     * @param type $reference
+     * @return array
+     */
     public function purchase($email, $token_name, $amount, $reference)
     {
         $parameters = [
             'command'            => 'PURCHASE',
+            'eci'                => 'RECURRING',
             'customer_email'     => $email,
-            'currency'           => 'AED',
+            'currency'           => $this->currency,
             'amount'             => $amount,
             'token_name'         => $token_name,
             'merchant_reference' => $reference
@@ -224,6 +238,12 @@ class PayFortIntegration
         return $this->makeAPIRequest($parameters);
     }
 
+    /**
+     * add the static request parameters and calculate signature
+     *
+     * @param array $params
+     * @return array
+     */
     private function addDefaultParams($params)
     {
         $params['language']            = $this->language;
