@@ -28,10 +28,12 @@ class PaymentMethodsController extends Controller
      *  statusCodes = {
      *      200="Returned on success",
      *      422="Returned if there is a validation error in the sent data",
+     *      500="Returned if there is an internal server error"
      *  },
      *  responseMap = {
      *      200="Ibtikar\ShareEconomyPayFortBundle\APIResponse\PaymentMethodDetailsResponse",
      *      422="Ibtikar\ShareEconomyToolsBundle\APIResponse\ValidationErrors",
+     *      500="Ibtikar\ShareEconomyToolsBundle\APIResponse\InternalServerError"
      *  }
      * )
      * @author Karim Shendy <kareem.elshendy@ibtikar.net.sa>
@@ -91,11 +93,13 @@ class PaymentMethodsController extends Controller
      *      200="Returned on success",
      *      422="Returned if there is a validation error in the sent data",
      *      403="Access denied",
+     *      500="Returned if there is an internal server error"
      *  },
      *  responseMap = {
      *      200="Ibtikar\ShareEconomyPayFortBundle\APIResponse\PaymentMethodDetailsResponse",
      *      422="Ibtikar\ShareEconomyToolsBundle\APIResponse\ValidationErrors",
-     *      403="Ibtikar\ShareEconomyToolsBundle\APIResponse\AccessDenied"
+     *      403="Ibtikar\ShareEconomyToolsBundle\APIResponse\AccessDenied",
+     *      500="Ibtikar\ShareEconomyToolsBundle\APIResponse\InternalServerError"
      *  }
      * )
      * @author Karim Shendy <kareem.elshendy@ibtikar.net.sa>
@@ -161,10 +165,12 @@ class PaymentMethodsController extends Controller
      *  statusCodes = {
      *      200="Returned on success",
      *      403="Access denied",
+     *      500="Returned if there is an internal server error"
      *  },
      *  responseMap = {
      *      200="Ibtikar\ShareEconomyToolsBundle\APIResponse\Success",
-     *      403="Ibtikar\ShareEconomyToolsBundle\APIResponse\AccessDenied"
+     *      403="Ibtikar\ShareEconomyToolsBundle\APIResponse\AccessDenied",
+     *      500="Ibtikar\ShareEconomyToolsBundle\APIResponse\InternalServerError"
      *  }
      * )
      * @author Karim Shendy <kareem.elshendy@ibtikar.net.sa>
@@ -219,10 +225,12 @@ class PaymentMethodsController extends Controller
      *  statusCodes = {
      *      200="Returned on success",
      *      403="Access denied",
+     *      500="Returned if there is an internal server error"
      *  },
      *  responseMap = {
      *      200="Ibtikar\ShareEconomyToolsBundle\APIResponse\Success",
-     *      403="Ibtikar\ShareEconomyToolsBundle\APIResponse\AccessDenied"
+     *      403="Ibtikar\ShareEconomyToolsBundle\APIResponse\AccessDenied",
+     *      500="Ibtikar\ShareEconomyToolsBundle\APIResponse\InternalServerError"
      *  }
      * )
      * @author Karim Shendy <kareem.elshendy@ibtikar.net.sa>
@@ -274,9 +282,11 @@ class PaymentMethodsController extends Controller
      *  section="PayFort",
      *  statusCodes = {
      *      200="Returned on success",
+     *      500="Returned if there is an internal server error"
      *  },
      *  responseMap = {
      *      200="Ibtikar\ShareEconomyToolsBundle\APIResponse\ItemsList",
+     *      500="Ibtikar\ShareEconomyToolsBundle\APIResponse\InternalServerError"
      *  }
      * )
      * @author Karim Shendy <kareem.elshendy@ibtikar.net.sa>
@@ -315,11 +325,13 @@ class PaymentMethodsController extends Controller
      *  section="PayFort",
      *  statusCodes = {
      *      200="Returned on success",
-     *      403="Access denied"
+     *      403="Access denied",
+     *      500="Returned if there is an internal server error"
      *  },
      *  responseMap = {
      *      200="Ibtikar\ShareEconomyToolsBundle\APIResponse\PaymentMethodDetailsResponse",
-     *      403="Ibtikar\ShareEconomyToolsBundle\APIResponse\AccessDenied"
+     *      403="Ibtikar\ShareEconomyToolsBundle\APIResponse\AccessDenied",
+     *      500="Ibtikar\ShareEconomyToolsBundle\APIResponse\InternalServerError"
      *  }
      * )
      * @author Karim Shendy <kareem.elshendy@ibtikar.net.sa>
