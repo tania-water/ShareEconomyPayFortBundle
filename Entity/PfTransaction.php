@@ -97,8 +97,8 @@ class PfTransaction
 
     /**
      * @var \Ibtikar\ShareEconomyPayFortBundle\Entity\PfPaymentMethod
-     * 
-     * @ORM\ManyToOne(targetEntity="Ibtikar\ShareEconomyPayFortBundle\Entity\PfPaymentMethod")
+     *
+     * @ORM\ManyToOne(targetEntity="Ibtikar\ShareEconomyPayFortBundle\Entity\PfPaymentMethod", inversedBy="transactions")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="payment_method_id", referencedColumnName="id", onDelete="RESTRICT", nullable=false)
      * })
