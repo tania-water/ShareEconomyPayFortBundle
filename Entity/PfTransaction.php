@@ -47,7 +47,7 @@ class PfTransaction
     /**
      * @var string
      *
-     * @ORM\Column(name="currency", type="string", length=3, nullable=false)
+     * @ORM\Column(name="currency", type="string", length=3, nullable=false, options={"fixed": true})
      */
     private $currency;
 
