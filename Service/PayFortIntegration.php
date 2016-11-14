@@ -4,6 +4,7 @@ namespace Ibtikar\ShareEconomyPayFortBundle\Service;
 
 use Lsw\ApiCallerBundle\Caller\LoggingApiCaller;
 use Lsw\ApiCallerBundle\Call\HttpPostJsonBody;
+use Ibtikar\ShareEconomyPayFortBundle\Entity\PfTransaction;
 
 /**
  * @author Karim Shendy <kareem.elshendy@ibtikar.net.sa>
@@ -116,7 +117,7 @@ class PayFortIntegration
      * @param type $responseParameters
      * @return type
      */
-    private function isValidResponse($responseParameters)
+    public function isValidResponse($responseParameters)
     {
         return isset($responseParameters['signature']) && $this->calculateResponseSignature($responseParameters) == $responseParameters['signature'];
     }
@@ -131,8 +132,7 @@ class PayFortIntegration
     public function makeAPIRequest($params)
     {
         $parameters = $this->addDefaultParams($params);
-
-        $response = $this->apiCaller->call(new HttpPostJsonBody($this->baseApiURL, $parameters, true, ['HTTPHEADER' => ['Content-Type:application/json']]));
+        $response   = $this->apiCaller->call(new HttpPostJsonBody($this->baseApiURL, $parameters, true, ['HTTPHEADER' => ['Content-Type:application/json']]));
 
         // verify the request signature
         if (!$this->isValidResponse($response)) {
@@ -217,25 +217,34 @@ class PayFortIntegration
 
     /**
      *
-     * @param type $email
-     * @param type $token_name
-     * @param type $amount
-     * @param type $reference
+     * @param string $tokenName
+     * @param  $amount
+     * @param string $merchantReference
      * @return array
      */
-    public function purchase($email, $token_name, $amount, $reference)
+    public function purchase($tokenName, $amount, $merchantReference, $email)
     {
         $parameters = [
             'command'            => 'PURCHASE',
             'eci'                => 'RECURRING',
-            'customer_email'     => $email,
             'currency'           => $this->currency,
-            'amount'             => $amount,
-            'token_name'         => $token_name,
-            'merchant_reference' => $reference
+            'amount'             => ($amount * 100),
+            'token_name'         => $tokenName,
+            'merchant_reference' => $merchantReference,
+            'customer_email'     => $email
         ];
 
         return $this->makeAPIRequest($parameters);
+    }
+
+    /**
+     * @param PfTransaction $transaction
+     * @return array
+     */
+    public function purchaseTransaction(PfTransaction $transaction)
+    {
+        return $this->purchase($transaction->getPaymentMethod()->getTokenName(), $transaction->getAmount(), $transaction->getMerchantReference(),
+                $transaction->getPaymentMethod()->getHolder()->getEmail());
     }
 
     /**
@@ -252,5 +261,23 @@ class PayFortIntegration
         $params['signature']           = $this->calculateRequestSignature($params);
 
         return $params;
+    }
+
+    /**
+     * @param PfTransaction $transaction
+     * @return array
+     */
+    public function checkTransactionStatus(PfTransaction $transaction)
+    {
+        $parameters = [
+            'query_command'      => 'CHECK_STATUS',
+            'merchant_reference' => $transaction->getMerchantReference()
+        ];
+
+        if ($transaction->getFortId()) {
+            $parameters['fort_id'] = $transaction->getFortId();
+        }
+
+        return $this->makeAPIRequest($parameters);
     }
 }

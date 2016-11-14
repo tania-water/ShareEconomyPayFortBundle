@@ -8,7 +8,7 @@ use Ibtikar\ShareEconomyPayFortBundle\Entity\PfPaymentMethodHolderInterface;
 /**
  * @author Karim Shendy <kareem.elshendy@ibtikar.net.sa>
  */
-class PaymentMethodsInterface
+class PaymentMethods
 {
     private $em;
 

@@ -16,4 +16,9 @@ interface PfTransactionInvoiceInterface
     public function removePfTransaction(PfTransaction $pfTransaction);
 
     public function getPfTransactions();
+
+    /**
+     * the invoice total amount due for creating transactions
+     */
+    public function getAmountDue();
 }

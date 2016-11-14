@@ -2,18 +2,36 @@
 
 namespace Ibtikar\ShareEconomyPayFortBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\Validator\Constraints as Assert;
+use Ibtikar\ShareEconomyPayFortBundle\PfTransactionsResponseCodes;
 
 /**
  * PfTransaction
  *
  * @ORM\Table(name="pf_transaction", indexes={@ORM\Index(name="payment_method_id", columns={"payment_method_id"}), @ORM\Index(name="invoice_id", columns={"invoice_id"})})
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="Ibtikar\ShareEconomyPayFortBundle\Repository\PfTransactionRepository")
  */
 class PfTransaction
 {
+    /**
+     * not a final state and the transaction maybe updated to be success or fail.
+     */
+    const STATUS_PENDING = 1;
+
+    /**
+     * transaction failed for any reason, final state and it will not be updated again.
+     */
+    const STATUS_FAIL = 2;
+
+    /**
+     * transaction succeed, it is a final state, final state and it will not be updated again.
+     */
+    const STATUS_SUCCESS = 3;
+
     /**
      * @var integer
      *
@@ -24,11 +42,15 @@ class PfTransaction
     private $id;
 
     /**
-     * @var integer
+     * @var PfTransactionInvoiceInterface
      *
-     * @ORM\Column(name="invoice_id", type="integer", nullable=false)
+     * @ORM\ManyToOne(targetEntity="PfTransactionInvoiceInterface", inversedBy="pfTransactions")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="invoice_id", referencedColumnName="id", nullable=false)
+     * })
+     *
      */
-    private $invoiceId;
+    private $invoice;
 
     /**
      * @var string
@@ -75,7 +97,7 @@ class PfTransaction
     /**
      * @var integer
      *
-     * @ORM\Column(name="current_status", type="integer", nullable=true)
+     * @ORM\Column(name="current_status", type="smallint", nullable=true)
      */
     private $currentStatus;
 
@@ -96,14 +118,29 @@ class PfTransaction
     private $updateAt;
 
     /**
-     * @var \Ibtikar\ShareEconomyPayFortBundle\Entity\PfPaymentMethod
+     * @var PfPaymentMethod
      *
-     * @ORM\ManyToOne(targetEntity="Ibtikar\ShareEconomyPayFortBundle\Entity\PfPaymentMethod", inversedBy="transactions")
+     * @ORM\ManyToOne(targetEntity="PfPaymentMethod", inversedBy="transactions")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="payment_method_id", referencedColumnName="id", onDelete="RESTRICT", nullable=false)
      * })
      */
     private $paymentMethod;
+
+    /**
+     * @var ArrayCollection
+     *
+     * @ORM\OneToMany(targetEntity="PfTransactionStatus", mappedBy="transaction", cascade={"persist"})
+     */
+    private $transactionStatuses;
+
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->transactionStatuses = new ArrayCollection();
+    }
 
     /**
      * Get id
@@ -116,27 +153,23 @@ class PfTransaction
     }
 
     /**
-     * Set invoiceId
-     *
-     * @param integer $invoiceId
+     * Set invoice
      *
      * @return PfTransaction
      */
-    public function setInvoiceId($invoiceId)
+    public function setInvoice($invoice = null)
     {
-        $this->invoiceId = $invoiceId;
+        $this->invoice = $invoice;
 
         return $this;
     }
 
     /**
-     * Get invoiceId
-     *
-     * @return integer
+     * Get invoice
      */
-    public function getInvoiceId()
+    public function getInvoice()
     {
-        return $this->invoiceId;
+        return $this->invoice;
     }
 
     /**
@@ -358,11 +391,11 @@ class PfTransaction
     /**
      * Set paymentMethod
      *
-     * @param \Ibtikar\ShareEconomyPayFortBundle\Entity\PfPaymentMethod $paymentMethod
+     * @param PfPaymentMethod $paymentMethod
      *
      * @return PfTransaction
      */
-    public function setPaymentMethod(\Ibtikar\ShareEconomyPayFortBundle\Entity\PfPaymentMethod $paymentMethod = null)
+    public function setPaymentMethod(PfPaymentMethod $paymentMethod = null)
     {
         $this->paymentMethod = $paymentMethod;
 
@@ -372,10 +405,70 @@ class PfTransaction
     /**
      * Get paymentMethod
      *
-     * @return \Ibtikar\ShareEconomyPayFortBundle\Entity\PfPaymentMethod
+     * @return PfPaymentMethod
      */
     public function getPaymentMethod()
     {
         return $this->paymentMethod;
+    }
+
+    /**
+     * Add transactionStatus
+     *
+     * @param PfTransactionStatus $transactionStatus
+     *
+     * @return PfTransaction
+     */
+    public function addTransactionStatus(PfTransactionStatus $transactionStatus)
+    {
+        $newStatus                   = null;
+        $this->transactionStatuses[] = $transactionStatus;
+
+        $transactionStatus->setTransaction($this);
+
+        if (isset($transactionStatus->getResponse()['transaction_status'])) {
+            $newStatus = $transactionStatus->getResponse()['transaction_status'];
+        } else {
+            $newStatus = $transactionStatus->getResponse()['status'];
+        }
+
+        // transaction success
+        if ($newStatus == PfTransactionsResponseCodes::TRANSACTION_SUCCESS) {
+            $this->setCurrentStatus(self::STATUS_SUCCESS);
+        }
+        // transaction pending
+        elseif (in_array($newStatus, [PfTransactionsResponseCodes::TRANSACTION_PENDING, PfTransactionsResponseCodes::TRANSACTION_IN_REVIEW, PfTransactionsResponseCodes::TRANSACTION_UNCERTAIN])) {
+            $this->setCurrentStatus(self::STATUS_PENDING);
+        }
+        // transaction failed
+        elseif ($newStatus == PfTransactionsResponseCodes::TRANSACTION_FAILURE) {
+            $this->setCurrentStatus(self::STATUS_FAIL);
+        }
+        // everything else will be considered as failed
+        else {
+            $this->setCurrentStatus(self::STATUS_FAIL);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Remove transactionStatus
+     *
+     * @param PfTransactionStatus $transactionStatus
+     */
+    public function removeTransactionStatus(PfTransactionStatus $transactionStatus)
+    {
+        $this->transactionStatuses->removeElement($transactionStatus);
+    }
+
+    /**
+     * Get transactionStatuses
+     *
+     * @return Collection
+     */
+    public function getTransactionStatuses()
+    {
+        return $this->transactionStatuses;
     }
 }

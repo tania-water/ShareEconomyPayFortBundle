@@ -40,9 +40,16 @@ class PfTransactionStatus
     /**
      * @var integer
      *
-     * @ORM\Column(name="status", type="smallint", nullable=false)
+     * @ORM\Column(name="status", type="string", length=2, nullable=false, options={"fixed": true})
      */
     private $status;
+
+    /**
+     * @var array
+     *
+     * @ORM\Column(name="response", type="text", length=65535, nullable=true)
+     */
+    protected $response;
 
     /**
      * @var \DateTime
@@ -55,7 +62,7 @@ class PfTransactionStatus
     /**
      * @var \Ibtikar\ShareEconomyPayFortBundle\Entity\PfTransaction
      *
-     * @ORM\ManyToOne(targetEntity="Ibtikar\ShareEconomyPayFortBundle\Entity\PfTransaction")
+     * @ORM\ManyToOne(targetEntity="Ibtikar\ShareEconomyPayFortBundle\Entity\PfTransaction", cascade={"persist"})
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="transaction_id", referencedColumnName="id", onDelete="CASCADE", nullable=false)
      * })
@@ -145,6 +152,30 @@ class PfTransactionStatus
     }
 
     /**
+     * Set response
+     *
+     * @param array $response
+     *
+     * @return PfTransactionStatus
+     */
+    public function setResponse($response)
+    {
+        $this->response = json_encode($response);
+
+        return $this;
+    }
+
+    /**
+     * Get response
+     *
+     * @return array
+     */
+    public function getResponse()
+    {
+        return json_decode($this->response, true);
+    }
+
+    /**
      * Set createdAt
      *
      * @param \DateTime $createdAt
@@ -190,5 +221,16 @@ class PfTransactionStatus
     public function getTransaction()
     {
         return $this->transaction;
+    }
+
+    /**
+     * @param array $response
+     */
+    public function setAttributesFromResponse(array $response)
+    {
+        $this->setResponseCode($response['response_code'])
+            ->setResponseMessage($response['response_message'])
+            ->setStatus($response['status'])
+            ->setResponse($response);
     }
 }

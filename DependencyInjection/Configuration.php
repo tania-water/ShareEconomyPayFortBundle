@@ -80,6 +80,9 @@ class Configuration implements ConfigurationInterface
                     ->booleanNode('prevent_last_payment_method_removal')
                         ->defaultTrue()
                     ->end()
+                    ->scalarNode('currency')
+                        ->cannotBeEmpty()
+                    ->end()
                 ->end();
 
         return $treeBuilder;

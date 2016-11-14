@@ -38,40 +38,4 @@ class PayFortController extends Controller
 
         return new JsonResponse($responseObject);
     }
-
-    public function afterPaymentAction(Request $request)
-    {
-        $logger = $this->get('logger');
-        $logger->info($request);
-    }
-
-    public function addCreditCardAction(Request $request)
-    {
-        $payfortIntegration = $this->get('ibtikar.shareeconomy.payfort.integration');
-        $tokenizationForm   = $payfortIntegration->getTokenizationForm(rand(10000, 99999));
-
-        return $this->render('IbtikarShareEconomyPayFortBundle:Default:addCreditCard.html.twig', ['tokenizationForm' => $tokenizationForm]);
-    }
-
-    public function purchaseAction(Request $request, $token)
-    {
-        $payfortIntegration = $this->get('ibtikar.shareeconomy.payfort.integration');
-        $response           = $payfortIntegration->purchase("kareem.elshendy@ibtikar.net.sa", $token, 200.00, rand(10000, 99999));
-
-        echo "<pre>";
-        var_dump($response);
-        echo "</pre>";
-        die;
-    }
-
-    public function refundAction(Request $request, $fortId, $amount, $currency)
-    {
-        $payfortIntegration = $this->get('ibtikar.shareeconomy.payfort.integration');
-        $response           = $payfortIntegration->refund($fortId, $amount, $currency);
-
-        echo "<pre>";
-        var_dump($response);
-        echo "</pre>";
-        die;
-    }
 }
