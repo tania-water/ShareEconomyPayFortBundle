@@ -2,23 +2,20 @@
 
 namespace Ibtikar\ShareEconomyPayFortBundle\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Ibtikar\ShareEconomyPayFortBundle\Entity\PfTransaction;
-use Ibtikar\ShareEconomyPayFortBundle\PayfortTransactionsResponseCodes;
 
 trait PfTransactionInvoiceTrait
 {
     /**
      * @var ArrayCollection
      *
-     * @ORM\OneToMany(targetEntity="PfTransaction", mappedBy="invoice")
+     * @ORM\OneToMany(targetEntity="Ibtikar\ShareEconomyPayFortBundle\Entity\PfTransaction", mappedBy="invoice")
      */
     protected $pfTransactions;
 
     /**
-     * @ORM\ManyToOne(targetEntity="PfPaymentMethod")
+     * @ORM\ManyToOne(targetEntity="Ibtikar\ShareEconomyPayFortBundle\Entity\PfPaymentMethod")
      * @ORM\JoinColumn(name="payment_method_id", referencedColumnName="id", nullable=true)
      */
     private $paymentMethod;
@@ -49,7 +46,7 @@ trait PfTransactionInvoiceTrait
     /**
      * Get PfTransactions
      *
-     * @return Collection
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getPfTransactions()
     {

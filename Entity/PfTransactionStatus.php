@@ -47,7 +47,7 @@ class PfTransactionStatus
     /**
      * @var array
      *
-     * @ORM\Column(name="response", type="text", length=65535, nullable=true)
+     * @ORM\Column(name="response", type="array", nullable=true)
      */
     protected $response;
 
@@ -160,7 +160,7 @@ class PfTransactionStatus
      */
     public function setResponse($response)
     {
-        $this->response = json_encode($response);
+        $this->response = $response;
 
         return $this;
     }
@@ -172,7 +172,7 @@ class PfTransactionStatus
      */
     public function getResponse()
     {
-        return json_decode($this->response, true);
+        return $this->response;
     }
 
     /**
