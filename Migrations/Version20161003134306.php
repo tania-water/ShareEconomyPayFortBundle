@@ -29,6 +29,6 @@ class Version20161003134306 extends AbstractMigration
         // this down() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() != 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('ALTER TABLE pf_payment_method ADD card_holder_name VARCHAR(255) DEFAULT NULL COLLATE utf8_unicode_ci, ADD card_bin INT DEFAULT NULL, ADD pf_status SMALLINT DEFAULT NULL, DROP fort_id, DROP merchant_reference, DROP payment_option, CHANGE expiry_date expiry_date DATE NOT NULL, CHANGE token_name token_name VARCHAR(255) DEFAULT NULL COLLATE utf8_unicode_ci');
+        $this->addSql('ALTER TABLE pf_payment_method ADD card_holder_name VARCHAR(255) DEFAULT NULL COLLATE utf8mb4_general_ci, ADD card_bin INT DEFAULT NULL, ADD pf_status SMALLINT DEFAULT NULL, DROP fort_id, DROP merchant_reference, DROP payment_option, CHANGE expiry_date expiry_date DATE NOT NULL, CHANGE token_name token_name VARCHAR(255) DEFAULT NULL COLLATE utf8mb4_general_ci');
     }
 }
