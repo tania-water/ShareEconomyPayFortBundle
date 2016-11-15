@@ -29,6 +29,6 @@ class Version20161027110418 extends AbstractMigration
         // this down() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() != 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('ALTER TABLE pf_payment_method CHANGE fort_id fort_id VARCHAR(255) NOT NULL COLLATE utf8mb4_general_ci, CHANGE token_name token_name VARCHAR(255) DEFAULT NULL COLLATE utf8mb4_general_ci');
+        $this->addSql('ALTER TABLE pf_payment_method CHANGE fort_id fort_id VARCHAR(190) NOT NULL COLLATE utf8mb4_general_ci, CHANGE token_name token_name VARCHAR(190) DEFAULT NULL COLLATE utf8mb4_general_ci');
     }
 }
