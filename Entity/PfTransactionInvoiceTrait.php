@@ -18,7 +18,7 @@ trait PfTransactionInvoiceTrait
      * @ORM\ManyToOne(targetEntity="Ibtikar\ShareEconomyPayFortBundle\Entity\PfPaymentMethod")
      * @ORM\JoinColumn(name="payment_method_id", referencedColumnName="id", nullable=true)
      */
-    private $paymentMethod;
+    protected $paymentMethod;
 
     /**
      * Add PfTransaction
