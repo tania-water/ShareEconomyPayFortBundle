@@ -92,9 +92,9 @@ class PfPaymentMethod
     /**
      * @var boolean
      *
-     * @ORM\Column(name="is_default", type="boolean", nullable=true)
+     * @ORM\Column(name="is_default", type="boolean", options={"default": false})
      */
-    private $isDefault;
+    private $isDefault = false;
 
     /**
      * @var \DateTime
