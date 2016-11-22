@@ -17,6 +17,8 @@ interface PfTransactionInvoiceInterface
 
     public function getPfTransactions();
 
+    public function getPfPaymentMethod();
+
     /**
      * the invoice total amount due for creating transactions
      */

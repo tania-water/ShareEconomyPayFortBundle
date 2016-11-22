@@ -5,6 +5,8 @@ namespace Ibtikar\ShareEconomyPayFortBundle\Service;
 use Ibtikar\ShareEconomyPayFortBundle\Entity\PfTransaction;
 use Ibtikar\ShareEconomyPayFortBundle\Entity\PfTransactionStatus;
 use Ibtikar\ShareEconomyPayFortBundle\Service\PayFortIntegration;
+use Ibtikar\ShareEconomyPayFortBundle\Entity\PfTransactionInvoiceInterface;
+use Ibtikar\ShareEconomyPayFortBundle\Entity\PfPaymentMethod;
 
 /**
  * Description of PaymentOperations
@@ -27,7 +29,7 @@ class PaymentOperations
         $this->pfPaymentIntegration = $pfPaymentIntegration;
     }
 
-    public function payInvoice($invoice)
+    public function payInvoice(PfTransactionInvoiceInterface $invoice)
     {
         // make sure that the invoice object implements the PfTransactionInvoiceInterface interface
         if (!in_array(self::PF_TRANSACTION_INVOICE_INTERFACE_FQNS, class_implements($invoice))) {
@@ -35,8 +37,13 @@ class PaymentOperations
         }
 
         // make sure that the invoice has an active payment method
-        if (!$invoice->getPaymentMethod()) {
+        $paymentMethod = $invoice->getPfPaymentMethod();
+        if (!$paymentMethod) {
             throw new \Exception('Invoice should have payment method to complete the payment process.');
+        }
+
+        if (!$paymentMethod instanceof PfPaymentMethod) {
+            throw new \Exception('getPftPaymentMethod should return object from class \Ibtikar\ShareEconomyPayFortBundle\Entity\PfPaymentMethod.');
         }
 
         // make sure that we can create new transaction for this invoice
@@ -48,7 +55,7 @@ class PaymentOperations
         $transaction = new PfTransaction();
         $transaction->setInvoice($invoice)
             ->setAmount($invoice->getAmountDue())
-            ->setPaymentMethod($invoice->getPaymentMethod())
+            ->setPaymentMethod($paymentMethod)
             ->setMerchantReference(bin2hex(random_bytes(16)));
 
         // make purchase in the payfort

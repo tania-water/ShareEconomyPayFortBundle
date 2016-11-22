@@ -78,6 +78,13 @@ trait PfTransactionInvoiceTrait
     }
 
     /**
+     * @return Ibtikar\ShareEconomyPayFortBundle\Entity\PfPaymentMethod
+     */
+    public function getPfPaymentMethod() {
+        return $this->getPaymentMethod();
+    }
+
+    /**
      * check if it is possible to create new transaction for this invoice or not
      * @return boolean
      */
