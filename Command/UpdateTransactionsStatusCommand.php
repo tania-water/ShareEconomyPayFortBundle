@@ -6,7 +6,6 @@ use Ibtikar\ShareEconomyPayFortBundle\Entity\PfTransactionStatus;
 use Ibtikar\ShareEconomyPayFortBundle\PfTransactionsResponseCodes;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -20,13 +19,10 @@ class UpdateTransactionsStatusCommand extends ContainerAwareCommand
     protected function configure()
     {
         $this->setName('ibtikar:share-economy-payfort:update-transactions-status')
-            ->setDescription("update pending and uncertain transactions statuses from payfort")
-            ->addOption('yell', null, InputOption::VALUE_NONE, 'If set, the task will yell in uppercase letters');
+            ->setDescription("update pending and uncertain transactions statuses from payfort");
     }
 
     /**
-     * 
-     * 
      * @param InputInterface $input
      * @param OutputInterface $output
      */
