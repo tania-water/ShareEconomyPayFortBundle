@@ -46,7 +46,7 @@ class PfTransaction
      *
      * @ORM\ManyToOne(targetEntity="PfTransactionInvoiceInterface", inversedBy="pfTransactions")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="invoice_id", referencedColumnName="id", nullable=false)
+     *   @ORM\JoinColumn(name="invoice_id", referencedColumnName="id", onDelete="CASCADE", nullable=false)
      * })
      *
      */

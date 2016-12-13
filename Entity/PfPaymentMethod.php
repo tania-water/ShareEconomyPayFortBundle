@@ -106,7 +106,7 @@ class PfPaymentMethod
     /**
      * @ORM\ManyToOne(targetEntity="PfPaymentMethodHolderInterface", inversedBy="pfPaymentMethods")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="holder_id", referencedColumnName="id", nullable=false)
+     *   @ORM\JoinColumn(name="holder_id", referencedColumnName="id", onDelete="CASCADE", nullable=false)
      * })
      * @var PfPaymentMethodHolderInterface
      *
