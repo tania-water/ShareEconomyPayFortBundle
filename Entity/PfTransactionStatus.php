@@ -62,7 +62,7 @@ class PfTransactionStatus
     /**
      * @var \Ibtikar\ShareEconomyPayFortBundle\Entity\PfTransaction
      *
-     * @ORM\ManyToOne(targetEntity="Ibtikar\ShareEconomyPayFortBundle\Entity\PfTransaction", cascade={"persist"})
+     * @ORM\ManyToOne(targetEntity="Ibtikar\ShareEconomyPayFortBundle\Entity\PfTransaction", cascade={"persist"}, inversedBy="transactionStatuses")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="transaction_id", referencedColumnName="id", onDelete="CASCADE", nullable=false)
      * })
