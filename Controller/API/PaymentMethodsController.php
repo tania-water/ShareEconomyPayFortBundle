@@ -69,7 +69,7 @@ class PaymentMethodsController extends Controller
             } catch (\Exception $exc) {
                 $output = new ToolsBundleAPIResponses\InternalServerError();
 
-                $this->get('logger')->error($exc->getMessage());
+                $this->get('logger')->critical($exc->getMessage());
             }
         }
 
@@ -146,7 +146,7 @@ class PaymentMethodsController extends Controller
                 } catch (\Exception $exc) {
                     $output = new ToolsBundleAPIResponses\InternalServerError();
 
-                    $this->get('logger')->error($exc->getMessage());
+                    $this->get('logger')->critical($exc->getMessage());
                 }
             }
         }
