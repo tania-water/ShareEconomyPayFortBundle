@@ -42,9 +42,9 @@ class PfTransaction
     private $id;
 
     /**
-     * @var PfTransactionInvoiceInterface
+     * @var Ibtikar\ShareEconomyPayFortBundle\Entity\PfTransactionInvoiceInterface
      *
-     * @ORM\ManyToOne(targetEntity="PfTransactionInvoiceInterface", inversedBy="pfTransactions")
+     * @ORM\ManyToOne(targetEntity="Ibtikar\ShareEconomyPayFortBundle\Entity\PfTransactionInvoiceInterface", inversedBy="pfTransactions")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="invoice_id", referencedColumnName="id", onDelete="CASCADE", nullable=false)
      * })
