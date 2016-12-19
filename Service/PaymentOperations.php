@@ -64,8 +64,11 @@ class PaymentOperations
         $transaction->setFortId($paymentResponse['fort_id'])
             ->setCustomerIp($paymentResponse['customer_ip'])
             ->setCurrency($paymentResponse['currency'])
-            ->setMerchantReference($paymentResponse['merchant_reference'])
-            ->setAuthorizationCode($paymentResponse['authorization_code']);
+            ->setMerchantReference($paymentResponse['merchant_reference']);
+
+        if (isset($paymentResponse['authorization_code'])) {
+            $transaction->setAuthorizationCode($paymentResponse['authorization_code']);
+        }
 
         // create new transaction status
         $transactionStatus = new PfTransactionStatus();
