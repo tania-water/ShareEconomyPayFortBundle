@@ -43,33 +43,37 @@ class PaymentMethodsController extends Controller
     {
         $em   = $this->getDoctrine()->getManager();
         $user = $this->getUser();
-
-        $paymentMethod = new PfPaymentMethod();
-        $paymentMethod->setHolder($user);
-        $paymentMethod->setCardNumber($request->request->get('cardNumber'));
-        $paymentMethod->setExpiryDate($request->request->get('expiryDate'));
-        $paymentMethod->setTokenName($request->request->get('tokenName'));
-        $paymentMethod->setPaymentOption($request->request->get('paymentOption'));
-        $paymentMethod->setMerchantReference($request->request->get('merchantReference'));
-        $paymentMethod->setFortId($request->request->get('fortId'));
-        $paymentMethod->setIsDefault(false);
-
-        $validationMessages = $this->get('api_operations')->validateObject($paymentMethod);
-
-        if (count($validationMessages)) {
-            $output         = new ToolsBundleAPIResponses\ValidationErrors();
-            $output->errors = $validationMessages;
+        if (!$user) {
+            $output = new ToolsBundleAPIResponses\Fail();
+            $output->message = 'Please login first';
         } else {
-            $em->persist($paymentMethod);
+            $paymentMethod = new PfPaymentMethod();
+            $paymentMethod->setHolder($user);
+            $paymentMethod->setCardNumber($request->request->get('cardNumber'));
+            $paymentMethod->setExpiryDate($request->request->get('expiryDate'));
+            $paymentMethod->setTokenName($request->request->get('tokenName'));
+            $paymentMethod->setPaymentOption($request->request->get('paymentOption'));
+            $paymentMethod->setMerchantReference($request->request->get('merchantReference'));
+            $paymentMethod->setFortId($request->request->get('fortId'));
+            $paymentMethod->setIsDefault(false);
 
-            try {
-                $em->flush();
+            $validationMessages = $this->get('api_operations')->validateObject($paymentMethod);
 
-                $output = $this->getPaymentMethodDetailsResponse($paymentMethod);
-            } catch (\Exception $exc) {
-                $output = new ToolsBundleAPIResponses\InternalServerError();
+            if (count($validationMessages)) {
+                $output         = new ToolsBundleAPIResponses\ValidationErrors();
+                $output->errors = $validationMessages;
+            } else {
+                $em->persist($paymentMethod);
 
-                $this->get('logger')->critical($exc->getMessage());
+                try {
+                    $em->flush();
+
+                    $output = $this->getPaymentMethodDetailsResponse($paymentMethod);
+                } catch (\Exception $exc) {
+                    $output = new ToolsBundleAPIResponses\InternalServerError();
+
+                    $this->get('logger')->critical($exc->getMessage());
+                }
             }
         }
 

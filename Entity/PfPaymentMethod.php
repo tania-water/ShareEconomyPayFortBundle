@@ -109,9 +109,6 @@ class PfPaymentMethod
      *   @ORM\JoinColumn(name="holder_id", referencedColumnName="id", onDelete="CASCADE", nullable=false)
      * })
      * @var PfPaymentMethodHolderInterface
-     *
-     * @Assert\NotBlank(message="fill_mandatory_field")
-     * @Assert\Valid
      */
     private $holder;
 
