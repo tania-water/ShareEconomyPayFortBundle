@@ -76,7 +76,7 @@ class PfTransaction
     /**
      * @var string
      *
-     * @ORM\Column(name="amount", type="decimal", precision=5, scale=2, nullable=false)
+     * @ORM\Column(name="amount", type="decimal", precision=9, scale=2, nullable=false)
      */
     private $amount;
 
