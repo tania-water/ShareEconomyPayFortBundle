@@ -1,5 +1,5 @@
 # ShareEconomyPayFortBundle
-This is a symfony bunlde to integrate easly with PayFort payment gateway.
+This is a symfony bundle to integrate easly with PayFort payment gateway.
 
 So far this bundle supports the following features:
 - Dealing with different payfort environments (sandbox and production).
@@ -63,7 +63,7 @@ So far this bundle supports the following features:
 
 4. Configure the bundle as following:
 
-    1. In your project parameters.yml.dist add the following block:
+- In your project parameters.yml.dist add the following block:
 
 ```yml
     payfort_environment: "sandbox"  # active environment. expected values (sandbox or production)
@@ -79,10 +79,8 @@ So far this bundle supports the following features:
     payfort_production_shaResponsePhrase: null
     payfort_currency: null   # AED, SAR, ....
 ```
-    2. Add the same previous block to your parameters.yml file then fill it with your payfort security configurations:
-
-    3. Add the bundle configurations in your config.yml:
-
+- Add the same previous block to your parameters.yml file then fill it with your payfort security configurations.
+- Add the bundle configurations in your config.yml:
 ```yml
       ibtikar_share_economy_pay_fort:
           environment: "%payfort_environment%"
