@@ -58,7 +58,7 @@ So far this bundle supports the following features:
 3. Run doctrine migrations command (Recommendation: add this command to your git post-merge file):
 
 ```cli
-    bin/console doctrine:migrations:migrate --configuration=src/Ibtikar/ShareEconomyPayFortBundle/Resources/config/migrations.yml
+    bin/console doctrine:migrations:migrate --env=prod --no-debug --configuration=src/Ibtikar/ShareEconomyPayFortBundle/Resources/config/migrations.yml
 ```
 
 4. Configure the bundle as following:
@@ -197,7 +197,7 @@ class PfTransactionStatusChangeListener
 # install cronjob to periodically update transactions statuses from payfort
 
 ```cli
-bin/console ibtikar:share-economy-payfort:update-transactions-status
+bin/console ibtikar:share-economy-payfort:update-transactions-status --env=prod --no-debug
 ```
 
 # Usage
