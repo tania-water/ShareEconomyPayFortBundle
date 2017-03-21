@@ -18,6 +18,10 @@ So far this bundle supports the following features:
   - Requesting mobile SDK token.
   - Managing users payment methods (add, edit, delete, list, view details and set default payment method).
 
+# Terms
+
+Holder model: Your User model.
+
 # Installation:
 
 1. In your project composer.json file add the bundle installation path:
@@ -115,7 +119,7 @@ So far this bundle supports the following features:
 
 6. Relate your payment methods holder model to the payment method model and your invoice model to payfort transactions model:
 
-- Your holder model should implement
+- Your payment method holder model should implement
 ```php
 Ibtikar\ShareEconomyPayFortBundle\Entity\PfPaymentMethodHolderInterface
 ```
