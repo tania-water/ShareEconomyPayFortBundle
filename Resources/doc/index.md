@@ -49,7 +49,7 @@ Installation steps
     payfort_production_shaResponsePhrase: null
 
     -Add the bundle configurations as following in your config.yml
-    
+
     ibtikar_share_economy_pay_fort:
         environment: "sandbox"
         sandbox:
@@ -73,7 +73,7 @@ Installation steps
             ssl_verifypeer: false  # to stop cURL from verifying the peer's certificate.
             useragent: "LeaseWeb API Caller"  # contents of the "User-Agent: " header.
             followlocation: true  # to follow any "Location: " header that the server sends.
-            sslversion: 3  # set to 3 to avoid any bugs that relate to automatic version selection.
+            #sslversion: 3  # set to 3 to avoid any bugs that relate to automatic version selection. if you get "Response signature not correct" error then disable this option
             fresh_connect: false  # set to true to force full reconnect every call.
 
 9.Relating your payment methods holder class to the payment method class
@@ -88,6 +88,6 @@ Installation steps
                     Ibtikar\ShareEconomyPayFortBundle\Entity\PfTransactionInvoiceInterface: {your invoice class full qualified name space. ex: AppBundle\Entity\Invoice}
 
 9.Now you can use the service as following:
-    
+
     $payfortIntegration = $this->get('ibtikar.shareeconomy.payfort.integration');
     $response = $payfortIntegration->storeCustomerCredit("4005550000000001", "123", "0517");
