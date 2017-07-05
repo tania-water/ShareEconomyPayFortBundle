@@ -17,6 +17,7 @@ class PaymentMethodsController extends Controller
      *
      * @ApiDoc(
      *  section="PayFort",
+     *  authentication=true,
      *  parameters={
      *      {"name"="cardNumber", "dataType"="string", "required"=true},
      *      {"name"="expiryDate", "dataType"="string", "required"=true},
@@ -85,6 +86,7 @@ class PaymentMethodsController extends Controller
      *
      * @ApiDoc(
      *  section="PayFort",
+     *  authentication=true,
      *  parameters={
      *      {"name"="cardNumber", "dataType"="string", "required"=true},
      *      {"name"="expiryDate", "dataType"="string", "required"=true},
@@ -163,6 +165,7 @@ class PaymentMethodsController extends Controller
      *
      * @ApiDoc(
      *  section="PayFort",
+     *  authentication=true,
      * parameters={
      *      {"name"="id", "dataType"="integer", "required"=true},
      *  },
@@ -223,6 +226,7 @@ class PaymentMethodsController extends Controller
      *
      * @ApiDoc(
      *  section="PayFort",
+     *  authentication=true,
      *  parameters={
      *      {"name"="id", "dataType"="integer", "required"=true},
      *  },
@@ -284,6 +288,7 @@ class PaymentMethodsController extends Controller
      *
      * @ApiDoc(
      *  section="PayFort",
+     *  authentication=true,
      *  statusCodes = {
      *      200="Returned on success",
      *      500="Returned if there is an internal server error"
@@ -327,6 +332,7 @@ class PaymentMethodsController extends Controller
      *
      * @ApiDoc(
      *  section="PayFort",
+     *  authentication=true,
      *  statusCodes = {
      *      200="Returned on success",
      *      403="Access denied",
