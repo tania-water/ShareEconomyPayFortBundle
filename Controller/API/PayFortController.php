@@ -16,6 +16,9 @@ class PayFortController extends Controller
      *
      * @ApiDoc(
      *  section="PayFort",
+     *  tags={
+     *     "stable"="green"
+     *  },
      *  output="Ibtikar\ShareEconomyPayFortBundle\APIResponse\SDKTokenResponse"
      * )
      * @author Karim Shendy <kareem.elshendy@ibtikar.net.sa>

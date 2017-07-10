@@ -17,6 +17,9 @@ class PaymentMethodsController extends Controller
      *
      * @ApiDoc(
      *  section="PayFort",
+     *  tags={
+     *     "stable"="green"
+     *  },
      *  authentication=true,
      *  parameters={
      *      {"name"="cardNumber", "dataType"="string", "required"=true},
@@ -86,6 +89,9 @@ class PaymentMethodsController extends Controller
      *
      * @ApiDoc(
      *  section="PayFort",
+     *  tags={
+     *     "stable"="green"
+     *  },
      *  authentication=true,
      *  parameters={
      *      {"name"="cardNumber", "dataType"="string", "required"=true},
@@ -165,6 +171,9 @@ class PaymentMethodsController extends Controller
      *
      * @ApiDoc(
      *  section="PayFort",
+     *  tags={
+     *     "stable"="green"
+     *  },
      *  authentication=true,
      * parameters={
      *      {"name"="id", "dataType"="integer", "required"=true},
@@ -226,6 +235,9 @@ class PaymentMethodsController extends Controller
      *
      * @ApiDoc(
      *  section="PayFort",
+     *  tags={
+     *     "stable"="green"
+     *  },
      *  authentication=true,
      *  parameters={
      *      {"name"="id", "dataType"="integer", "required"=true},
@@ -288,6 +300,9 @@ class PaymentMethodsController extends Controller
      *
      * @ApiDoc(
      *  section="PayFort",
+     *  tags={
+     *     "stable"="green"
+     *  },
      *  authentication=true,
      *  statusCodes = {
      *      200="Returned on success",
@@ -332,6 +347,9 @@ class PaymentMethodsController extends Controller
      *
      * @ApiDoc(
      *  section="PayFort",
+     *  tags={
+     *     "stable"="green"
+     *  },
      *  authentication=true,
      *  statusCodes = {
      *      200="Returned on success",
