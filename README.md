@@ -152,6 +152,15 @@ Ibtikar\ShareEconomyPayFortBundle\Entity\PfTransactionInvoiceInterface
 
 create a service class and inject it with whatever you want
 
+```yml
+      pf.transaction.listener:
+        class: AppBundle\Service\Listener\PfTransactionStatusChangeListener
+        arguments:  ["@doctrine.orm.entity_manager"]
+        tags:
+            - { name: kernel.event_listener, event: pf.transaction.success, method: successTransaction }
+            - { name: kernel.event_listener, event: pf.transaction.fail, method: failTransaction }
+```
+
 ```php
 <?php
 
