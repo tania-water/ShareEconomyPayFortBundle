@@ -150,9 +150,10 @@ Ibtikar\ShareEconomyPayFortBundle\Entity\PfTransactionInvoiceInterface
 
 # create transaction status change listener:
 
-create a service class and inject it with whatever you want
+create a service class and inject it with whatever you want as following:
 
 ```yml
+services:
       pf.transaction.listener:
         class: AppBundle\Service\Listener\PfTransactionStatusChangeListener
         arguments:  ["@doctrine.orm.entity_manager"]
