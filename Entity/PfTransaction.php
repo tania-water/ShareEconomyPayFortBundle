@@ -6,17 +6,22 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
-use Symfony\Component\Validator\Constraints as Assert;
-use Ibtikar\ShareEconomyPayFortBundle\PfTransactionsResponseCodes;
 
 /**
  * PfTransaction
  *
- * @ORM\Table(name="pf_transaction", indexes={@ORM\Index(name="payment_method_id", columns={"payment_method_id"}), @ORM\Index(name="invoice_id", columns={"invoice_id"})})
+ * @ORM\Table(
+ *      name="pf_transaction",
+ *      indexes={
+ *          @ORM\Index(name="payment_method_id", columns={"payment_method_id"}),
+ *          @ORM\Index(name="invoice_id", columns={"invoice_id"})
+ *      }
+ * )
  * @ORM\Entity(repositoryClass="Ibtikar\ShareEconomyPayFortBundle\Repository\PfTransactionRepository")
  */
 class PfTransaction
 {
+
     /**
      * not a final state and the transaction maybe updated to be success or fail.
      */
@@ -421,33 +426,8 @@ class PfTransaction
      */
     public function addTransactionStatus(PfTransactionStatus $transactionStatus)
     {
-        $newStatus                   = null;
         $this->transactionStatuses[] = $transactionStatus;
-
         $transactionStatus->setTransaction($this);
-
-        if (isset($transactionStatus->getResponse()['transaction_status'])) {
-            $newStatus = $transactionStatus->getResponse()['transaction_status'];
-        } else {
-            $newStatus = $transactionStatus->getResponse()['status'];
-        }
-
-        // transaction success
-        if ($newStatus == PfTransactionsResponseCodes::TRANSACTION_SUCCESS) {
-            $this->setCurrentStatus(self::STATUS_SUCCESS);
-        }
-        // transaction pending
-        elseif (in_array($newStatus, [PfTransactionsResponseCodes::TRANSACTION_PENDING, PfTransactionsResponseCodes::TRANSACTION_IN_REVIEW, PfTransactionsResponseCodes::TRANSACTION_UNCERTAIN])) {
-            $this->setCurrentStatus(self::STATUS_PENDING);
-        }
-        // transaction failed
-        elseif ($newStatus == PfTransactionsResponseCodes::TRANSACTION_FAILURE) {
-            $this->setCurrentStatus(self::STATUS_FAIL);
-        }
-        // everything else will be considered as failed
-        else {
-            $this->setCurrentStatus(self::STATUS_FAIL);
-        }
 
         return $this;
     }

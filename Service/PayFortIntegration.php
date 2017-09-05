@@ -267,7 +267,7 @@ class PayFortIntegration
      * @param PfTransaction $transaction
      * @return array
      */
-    public function checkTransactionStatus(PfTransaction $transaction)
+    public function getTransactionStatus(PfTransaction $transaction)
     {
         $parameters = [
             'query_command'      => 'CHECK_STATUS',

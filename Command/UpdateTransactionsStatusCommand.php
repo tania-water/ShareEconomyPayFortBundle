@@ -2,7 +2,6 @@
 
 namespace Ibtikar\ShareEconomyPayFortBundle\Command;
 
-use Ibtikar\ShareEconomyPayFortBundle\Entity\PfTransactionStatus;
 use Ibtikar\ShareEconomyPayFortBundle\PfTransactionsResponseCodes;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
@@ -32,16 +31,10 @@ class UpdateTransactionsStatusCommand extends ContainerAwareCommand
         $candidatesTransactions = $em->getRepository('IbtikarShareEconomyPayFortBundle:PfTransaction')->getUpdateStatusCandidatesTransactions();
 
         foreach ($candidatesTransactions as $transaction) {
-            $responseParams = $this->getContainer()->get('ibtikar.shareeconomy.payfort.integration')->checkTransactionStatus($transaction);
+            $responseParams = $this->getContainer()->get('ibtikar.shareeconomy.payfort.integration')->getTransactionStatus($transaction);
 
             if ($responseParams['status'] == PfTransactionsResponseCodes::CHECK_STATUS_SUCCESS) {
-                $transactionStatus = new PfTransactionStatus();
-                $transactionStatus->setAttributesFromResponse($responseParams);
-
-                $transaction->addTransactionStatus($transactionStatus);
-
-                $em->persist($transaction);
-                $em->flush();
+                $this->getContainer()->get('ibtikar.shareeconomy.payfort.transaction_status_service')->addTransactionStatus($transaction, $responseParams);
             }
         }
     }

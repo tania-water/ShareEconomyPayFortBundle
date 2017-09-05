@@ -7,6 +7,7 @@ use Ibtikar\ShareEconomyPayFortBundle\Entity\PfTransactionStatus;
 use Ibtikar\ShareEconomyPayFortBundle\Service\PayFortIntegration;
 use Ibtikar\ShareEconomyPayFortBundle\Entity\PfTransactionInvoiceInterface;
 use Ibtikar\ShareEconomyPayFortBundle\Entity\PfPaymentMethod;
+use Ibtikar\ShareEconomyPayFortBundle\Service\TransactionStatusService;
 
 /**
  * Description of PaymentOperations
@@ -15,18 +16,21 @@ use Ibtikar\ShareEconomyPayFortBundle\Entity\PfPaymentMethod;
  */
 class PaymentOperations
 {
+
     const PF_TRANSACTION_INVOICE_INTERFACE_FQNS = 'Ibtikar\ShareEconomyPayFortBundle\Entity\PfTransactionInvoiceInterface';
 
     private $em;
     private $pfPaymentIntegration;
+    private $transactionStatusService;
 
     /**
      * @param $em
      */
-    public function __construct($em, PayFortIntegration $pfPaymentIntegration)
+    public function __construct($em, PayFortIntegration $pfPaymentIntegration, TransactionStatusService $transactionStatusService)
     {
-        $this->em                   = $em;
-        $this->pfPaymentIntegration = $pfPaymentIntegration;
+        $this->em                       = $em;
+        $this->pfPaymentIntegration     = $pfPaymentIntegration;
+        $this->transactionStatusService = $transactionStatusService;
     }
 
     public function payInvoice(PfTransactionInvoiceInterface $invoice)
@@ -70,13 +74,11 @@ class PaymentOperations
             $transaction->setAuthorizationCode($paymentResponse['authorization_code']);
         }
 
-        // create new transaction status
-        $transactionStatus = new PfTransactionStatus();
-        $transactionStatus->setAttributesFromResponse($paymentResponse);
-
-        $transaction->addTransactionStatus($transactionStatus);
-
         $this->em->persist($transaction);
         $this->em->flush();
+        $this->em->refresh($transaction);
+
+        // create new transaction status
+        $this->transactionStatusService->addTransactionStatus($transaction, $paymentResponse);
     }
 }

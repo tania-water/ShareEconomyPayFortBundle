@@ -4,7 +4,6 @@ namespace Ibtikar\ShareEconomyPayFortBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
-use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * PfTransactionStatus
@@ -14,6 +13,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class PfTransactionStatus
 {
+
     /**
      * @var integer
      *
@@ -221,16 +221,5 @@ class PfTransactionStatus
     public function getTransaction()
     {
         return $this->transaction;
-    }
-
-    /**
-     * @param array $response
-     */
-    public function setAttributesFromResponse(array $response)
-    {
-        $this->setResponseCode($response['response_code'])
-            ->setResponseMessage($response['response_message'])
-            ->setStatus($response['status'])
-            ->setResponse($response);
     }
 }

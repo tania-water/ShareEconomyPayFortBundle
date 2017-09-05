@@ -17,8 +17,6 @@ services:
         class: Ibtikar\ShareEconomyPayFortBundle\Service\PaymentOperations
         arguments:  ["@doctrine.orm.entity_manager", "@ibtikar.shareeconomy.payfort.integration"]
 
-    ibtikar.shareeconomy.payfort.models_life_cycle:
-        class: Ibtikar\ShareEconomyPayFortBundle\Listener\PfModelsLifeCycle
-        tags:
-            - { name: doctrine.event_subscriber, connection: default }
-        arguments:  ["@event_dispatcher"]
+    ibtikar.shareeconomy.payfort.transaction_status_service:
+        class: Ibtikar\ShareEconomyPayFortBundle\Service\TransactionStatusService
+        arguments:  ["@doctrine.orm.entity_manager", "@event_dispatcher"]

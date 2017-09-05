@@ -21,13 +21,7 @@ class OfflineNotificationsReceiverController extends Controller
             $transaction = $em->getRepository('IbtikarShareEconomyPayFortBundle:PfTransaction')->findOneBy(['fortId' => $requestParams['fort_id'], 'merchantReference' => $requestParams['merchant_reference']]);
 
             if ($transaction) {
-                $transactionStatus = new PfTransactionStatus();
-                $transactionStatus->setAttributesFromResponse($requestParams);
-
-                $transaction->addTransactionStatus($transactionStatus);
-
-                $em->persist($transaction);
-                $em->flush();
+                $this->get('ibtikar.shareeconomy.payfort.transaction_status_service')->addTransactionStatus($transaction, $requestParams);
             }
 
             return new \Symfony\Component\HttpFoundation\Response('notification received successfully.');
