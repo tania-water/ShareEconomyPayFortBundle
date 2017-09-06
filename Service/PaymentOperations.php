@@ -16,7 +16,6 @@ use Ibtikar\ShareEconomyPayFortBundle\Service\TransactionStatusService;
  */
 class PaymentOperations
 {
-
     const PF_TRANSACTION_INVOICE_INTERFACE_FQNS = 'Ibtikar\ShareEconomyPayFortBundle\Entity\PfTransactionInvoiceInterface';
 
     private $em;
@@ -66,9 +65,12 @@ class PaymentOperations
         $paymentResponse = $this->pfPaymentIntegration->purchaseTransaction($transaction);
 
         $transaction->setFortId($paymentResponse['fort_id'])
-            ->setCustomerIp($paymentResponse['customer_ip'])
             ->setCurrency($paymentResponse['currency'])
             ->setMerchantReference($paymentResponse['merchant_reference']);
+
+        if (isset($paymentResponse['customer_ip'])) {
+            $transaction->setCustomerIp($paymentResponse['customer_ip']);
+        }
 
         if (isset($paymentResponse['authorization_code'])) {
             $transaction->setAuthorizationCode($paymentResponse['authorization_code']);
