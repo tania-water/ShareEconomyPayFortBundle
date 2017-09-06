@@ -6,6 +6,7 @@ use Ibtikar\ShareEconomyPayFortBundle\Entity\PfTransaction;
 use Ibtikar\ShareEconomyPayFortBundle\Entity\PfTransactionStatus;
 use Ibtikar\ShareEconomyPayFortBundle\PfTransactionsResponseCodes;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Ibtikar\ShareEconomyPayFortBundle\Events\PfTransactionStatusChangeEvent;
 
 /**
  * This service is responsible for updating transactions statuses
