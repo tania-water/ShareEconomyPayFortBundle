@@ -12,11 +12,11 @@ services:
     ibtikar.shareeconomy.payfort.PaymentMethods:
         class: Ibtikar\ShareEconomyPayFortBundle\Service\PaymentMethods
         arguments:  ["@doctrine.orm.entity_manager"]
-        
-    ibtikar.shareeconomy.payfort.PaymentOperations:
-        class: Ibtikar\ShareEconomyPayFortBundle\Service\PaymentOperations
-        arguments:  ["@doctrine.orm.entity_manager", "@ibtikar.shareeconomy.payfort.integration"]
 
     ibtikar.shareeconomy.payfort.transaction_status_service:
         class: Ibtikar\ShareEconomyPayFortBundle\Service\TransactionStatusService
         arguments:  ["@doctrine.orm.entity_manager", "@event_dispatcher"]
+        
+    ibtikar.shareeconomy.payfort.PaymentOperations:
+        class: Ibtikar\ShareEconomyPayFortBundle\Service\PaymentOperations
+        arguments:  ["@doctrine.orm.entity_manager", "@ibtikar.shareeconomy.payfort.integration", "@ibtikar.shareeconomy.payfort.transaction_status_service"]
