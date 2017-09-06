@@ -5,6 +5,7 @@ namespace Ibtikar\ShareEconomyPayFortBundle\Service;
 use Ibtikar\ShareEconomyPayFortBundle\Entity\PfTransaction;
 use Ibtikar\ShareEconomyPayFortBundle\Entity\PfTransactionStatus;
 use Ibtikar\ShareEconomyPayFortBundle\PfTransactionsResponseCodes;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
  * This service is responsible for updating transactions statuses
