@@ -14,7 +14,6 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
  */
 class TransactionStatusService
 {
-
     /**
      * @var type 
      */
@@ -57,9 +56,13 @@ class TransactionStatusService
         $oldTransactionStatus = $transaction->getCurrentStatus();
         $newTransactionStatus = $this->getTransctionStatusFromResponse($payfortResponse);
 
+        if ($oldTransactionStatus !== $newTransactionStatus) {
+            $transaction->setCurrentStatus($newTransactionStatus);
+        }
+
         // create new transaction status
         $transactionStatus = new PfTransactionStatus();
-        $this->setResponseCode($payfortResponse['response_code'])
+        $transactionStatus->setResponseCode($payfortResponse['response_code'])
             ->setResponseMessage($payfortResponse['response_message'])
             ->setStatus($payfortResponse['status'])
             ->setResponse($payfortResponse);
@@ -83,6 +86,7 @@ class TransactionStatusService
     private function getTransctionStatusFromResponse(array $payfortResponse)
     {
         $status = null;
+        $return = null;
 
         if (isset($payfortResponse['transaction_status'])) {
             $status = $payfortResponse['transaction_status'];
@@ -92,21 +96,21 @@ class TransactionStatusService
 
         // transaction success
         if ($status == PfTransactionsResponseCodes::TRANSACTION_SUCCESS) {
-            $this->setCurrentStatus(self::STATUS_SUCCESS);
+            $return = PfTransaction::STATUS_SUCCESS;
         }
         // transaction pending
         elseif (in_array($status, [PfTransactionsResponseCodes::TRANSACTION_PENDING, PfTransactionsResponseCodes::TRANSACTION_IN_REVIEW, PfTransactionsResponseCodes::TRANSACTION_UNCERTAIN])) {
-            $this->setCurrentStatus(self::STATUS_PENDING);
+            $return = PfTransaction::STATUS_PENDING;
         }
         // transaction failed
         elseif ($status == PfTransactionsResponseCodes::TRANSACTION_FAILURE) {
-            $this->setCurrentStatus(self::STATUS_FAIL);
+            $return = PfTransaction::STATUS_FAIL;
         }
         // everything else will be considered as failed
         else {
-            $this->setCurrentStatus(self::STATUS_FAIL);
+            $return = PfTransaction::STATUS_FAIL;
         }
 
-        return $status;
+        return $return;
     }
 }
