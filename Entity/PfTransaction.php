@@ -10,6 +10,8 @@ use Gedmo\Mapping\Annotation as Gedmo;
 /**
  * PfTransaction
  *
+ * @ORM\InheritanceType("SINGLE_TABLE")
+ * @ORM\DiscriminatorColumn(name="entityClass", type="string")
  * @ORM\Table(
  *      name="pf_transaction",
  *      indexes={
@@ -127,7 +129,7 @@ class PfTransaction
      *
      * @ORM\ManyToOne(targetEntity="PfPaymentMethod", inversedBy="transactions")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="payment_method_id", referencedColumnName="id", onDelete="RESTRICT", nullable=false)
+     *   @ORM\JoinColumn(name="payment_method_id", referencedColumnName="id", onDelete="RESTRICT", nullable=true)
      * })
      */
     private $paymentMethod;
