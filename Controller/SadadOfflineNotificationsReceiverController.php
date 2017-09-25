@@ -14,7 +14,8 @@ class SadadOfflineNotificationsReceiverController extends Controller {
      */
     public function transactionStatusUpdateNotificationAction(Request $request) {
         $em = $this->getDoctrine()->getManager();
-
+        $requestParams = $request->request->all();
+        
         if ($this->get('ibtikar.shareeconomy.payfort.integration')->isValidResponse($requestParams)) {
             $transaction = $em->getRepository('IbtikarShareEconomyPayFortBundle:PfSadadTransaction')->findOneBy(['fortId' => $requestParams['fort_id'], 'merchantReference' => $requestParams['merchant_reference']]);
 
