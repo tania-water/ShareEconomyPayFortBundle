@@ -83,6 +83,9 @@ class Configuration implements ConfigurationInterface
                     ->scalarNode('currency')
                         ->cannotBeEmpty()
                     ->end()
+                    ->scalarNode('invoice_entity_class')
+                        ->cannotBeEmpty()
+                    ->end()
                 ->end();
 
         return $treeBuilder;

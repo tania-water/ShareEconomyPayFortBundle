@@ -102,6 +102,7 @@ Holder model: Your User model.
               shaResponsePhrase: "%payfort_production_shaResponsePhrase%"
           prevent_last_payment_method_removal: true # whether prevent user from deleting his last payment method or not (true or false)
           currency: "%payfort_currency%"
+          invoice_entity_class: "%invoice_entity_class%"
 ```
 
 5. Add api caller configuration block in your project config.yml parameters section     # https://github.com/LeaseWeb/LswApiCallerBundle#configuration
@@ -191,7 +192,7 @@ class PfTransactionStatusChangeListener
     {
         $transaction = $event->getTransaction();
         $myInvoice   = $transaction->getInvoice();
-        
+
         // take some actions
     }
 
