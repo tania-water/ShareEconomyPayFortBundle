@@ -213,6 +213,7 @@ class PfTransactionStatusChangeListener
 
 ```cli
 bin/console ibtikar:share-economy-payfort:update-transactions-status --env=prod --no-debug
+bin/console ibtikar:share-economy-payfort:update-failed-transactions --env=prod --no-debug
 ```
 
 # Usage

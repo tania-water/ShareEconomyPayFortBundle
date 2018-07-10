@@ -25,4 +25,16 @@ class PfTransactionRepository extends EntityRepository
                 ->getQuery()
                 ->execute();
     }
+
+    /**
+     * @return integer
+     */
+    public function getUpdateStatusFailedTransactions()
+    {
+        return $this->createQueryBuilder('t')
+                ->where('t.currentStatus = :fail')
+                ->setParameter('fail', PfTransaction::STATUS_FAIL)
+                ->getQuery()
+                ->execute();
+    }
 }
