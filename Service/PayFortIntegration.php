@@ -228,7 +228,7 @@ class PayFortIntegration
             'command'            => 'PURCHASE',
             'eci'                => 'RECURRING',
             'currency'           => $this->currency,
-            'amount'             => ($amount * 100),
+            'amount'             => round($amount * 100),
             'token_name'         => $tokenName,
             'merchant_reference' => $merchantReference,
             'customer_email'     => $email
