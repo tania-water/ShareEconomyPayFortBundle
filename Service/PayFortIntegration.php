@@ -280,4 +280,26 @@ class PayFortIntegration
 
         return $this->makeAPIRequest($parameters);
     }
+
+
+    /**
+     *
+     * @param string $tokenName
+     * @param  $amount
+     * @param string $merchantReference
+     * @return array
+     */
+    public function nonRecurringPurchase($tokenName, $amount, $merchantReference, $email)
+    {
+        $parameters = [
+            'command'            => 'PURCHASE',
+            'currency'           => $this->currency,
+            'amount'             => round($amount * 100),
+            'token_name'         => $tokenName,
+            'merchant_reference' => $merchantReference,
+            'customer_email'     => $email
+        ];
+
+        return $this->makeAPIRequest($parameters);
+    }
 }
