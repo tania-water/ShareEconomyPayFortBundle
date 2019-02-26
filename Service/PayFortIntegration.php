@@ -96,9 +96,12 @@ class PayFortIntegration
      * @param array $requestParams
      * @return string Request signature
      */
-    private function calculateRequestSignature($requestParams)
+    private function calculateRequestSignature($requestParams,$paymentOption=null)
     {
-        return $this->calculateSignature($requestParams, $this->shaRequestPhrase, ["card_number", "expiry_date", "card_security_code", "card_holder_name"]);
+       //if($paymentOption=='MADA')
+       //return $this->calculateSignature($requestParams, $this->shaRequestPhrase, ["card_number", "expiry_date", "card_holder_name"]);
+      // else 
+       return $this->calculateSignature($requestParams, $this->shaRequestPhrase, ["card_number", "expiry_date", "card_security_code", "card_holder_name"]);
     }
 
     /**
@@ -129,9 +132,9 @@ class PayFortIntegration
      * @return array
      * @throws \Exception
      */
-    public function makeAPIRequest($params)
+    public function makeAPIRequest($params,$paymentOption=null)
     {
-        $parameters = $this->addDefaultParams($params);
+        $parameters = $this->addDefaultParams($params,$paymentOption);
         $response   = $this->apiCaller->call(new HttpPostJsonBody($this->baseApiURL, $parameters, true, ['HTTPHEADER' => ['Content-Type:application/json']]));
 
         // verify the request signature
@@ -222,29 +225,47 @@ class PayFortIntegration
      * @param string $merchantReference
      * @return array
      */
-    public function purchase($tokenName, $amount, $merchantReference, $email)
+    public function purchase($tokenName, $amount, $merchantReference, $email, $paymentOption= null,$cardSecurityCode=null)
     {
-        $parameters = [
-            'command'            => 'PURCHASE',
-            'eci'                => 'RECURRING',
-            'currency'           => $this->currency,
-            'amount'             => round($amount * 100),
-            'token_name'         => $tokenName,
-            'merchant_reference' => $merchantReference,
-            'customer_email'     => $email
-        ];
+        $customerEmail = (($email!='')?$email:'appsupport@gmail.com');
+        /*if($paymentOption=='MADA')
+        { 
+            $parameters = [
+                'command'            => 'PURCHASE',
+                'currency'           => $this->currency,
+                'amount'             => round($amount * 100),
+                'token_name'         => $tokenName,
+                'merchant_reference' => $merchantReference,
+                'customer_email'     => $customerEmail,
+                'customer_ip'        => $_SERVER['HTTP_CF_CONNECTING_IP'],
+                'card_security_code' => $cardSecurityCode,
+            ];
+        }
+        else
+        {*/
+            $parameters = [
+                'command'            => 'PURCHASE',
+                'eci'                => 'RECURRING',
+                'currency'           => $this->currency,
+                'amount'             => round($amount * 100),
+                'token_name'         => $tokenName,
+                'merchant_reference' => $merchantReference,
+                'customer_email'     => $customerEmail
+            ];
+       // }
 
-        return $this->makeAPIRequest($parameters);
+        return $this->makeAPIRequest($parameters,$paymentOption);
     }
 
     /**
      * @param PfTransaction $transaction
      * @return array
      */
-    public function purchaseTransaction(PfTransaction $transaction)
+    public function purchaseTransaction(PfTransaction $transaction,$cardSecurityCode)
     {
         return $this->purchase($transaction->getPaymentMethod()->getTokenName(), $transaction->getAmount(), $transaction->getMerchantReference(),
-                $transaction->getPaymentMethod()->getHolder()->getEmail());
+                $transaction->getPaymentMethod()->getHolder()->getEmail(),
+            $transaction->getPaymentMethod()->getPaymentOption(),$cardSecurityCode);
     }
 
     /**
@@ -253,12 +274,12 @@ class PayFortIntegration
      * @param array $params
      * @return array
      */
-    private function addDefaultParams($params)
+    private function addDefaultParams($params,$paymentOption=null)
     {
         $params['language']            = $this->language;
         $params['merchant_identifier'] = $this->merchantIdentifier;
         $params['access_code']         = $this->accessCode;
-        $params['signature']           = $this->calculateRequestSignature($params);
+        $params['signature']           = $this->calculateRequestSignature($params,$paymentOption);
 
         return $params;
     }
@@ -291,13 +312,14 @@ class PayFortIntegration
      */
     public function nonRecurringPurchase($tokenName, $amount, $merchantReference, $email, $returnUrl)
     {
+        $customerEmail = (($email!='')?$email:'appsupport@gmail.com');
         $parameters = [
             'command'            => 'PURCHASE',
             'currency'           => $this->currency,
             'amount'             => round($amount * 100),
             'token_name'         => $tokenName,
             'merchant_reference' => $merchantReference,
-            'customer_email'     => $email,
+            'customer_email'     => $customerEmail,
             'return_url'         => $returnUrl
         ];
 

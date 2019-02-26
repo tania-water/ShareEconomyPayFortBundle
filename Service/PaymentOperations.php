@@ -32,7 +32,7 @@ class PaymentOperations
         $this->transactionStatusService = $transactionStatusService;
     }
 
-    public function payInvoice(PfTransactionInvoiceInterface $invoice)
+    public function payInvoice(PfTransactionInvoiceInterface $invoice,$cardSecurityCode)
     {
         // make sure that the invoice object implements the PfTransactionInvoiceInterface interface
         if (!in_array(self::PF_TRANSACTION_INVOICE_INTERFACE_FQNS, class_implements($invoice))) {
@@ -62,7 +62,7 @@ class PaymentOperations
             ->setMerchantReference(bin2hex(random_bytes(16)));
 
         // make purchase in the payfort
-        $paymentResponse = $this->pfPaymentIntegration->purchaseTransaction($transaction);
+        $paymentResponse = $this->pfPaymentIntegration->purchaseTransaction($transaction,$cardSecurityCode);
 
         //Handling invalid token_name
         if(!isset($paymentResponse['fort_id']) || !isset($paymentResponse['currency']) || !isset($paymentResponse['merchant_reference'])){
@@ -74,7 +74,7 @@ class PaymentOperations
             ->setMerchantReference($paymentResponse['merchant_reference']);
 
         if (isset($paymentResponse['customer_ip'])) {
-            $transaction->setCustomerIp($paymentResponse['merchant_reference']);
+            $transaction->setCustomerIp($paymentResponse['customer_ip']);
         }
 
         if (isset($paymentResponse['authorization_code'])) {
@@ -87,5 +87,6 @@ class PaymentOperations
 
         // create new transaction status
         $this->transactionStatusService->addTransactionStatus($transaction, $paymentResponse);
+
     }
 }
