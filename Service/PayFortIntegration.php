@@ -224,6 +224,7 @@ class PayFortIntegration
      */
     public function purchase($tokenName, $amount, $merchantReference, $email)
     {
+        $customerEmail = (($email!='')?$email:'appsupport@gmail.com');
         $parameters = [
             'command'            => 'PURCHASE',
             'eci'                => 'RECURRING',
@@ -231,7 +232,7 @@ class PayFortIntegration
             'amount'             => round($amount * 100),
             'token_name'         => $tokenName,
             'merchant_reference' => $merchantReference,
-            'customer_email'     => $email
+            'customer_email'     => $customerEmail
         ];
 
         return $this->makeAPIRequest($parameters);
@@ -291,13 +292,14 @@ class PayFortIntegration
      */
     public function nonRecurringPurchase($tokenName, $amount, $merchantReference, $email, $returnUrl)
     {
+        $customerEmail = (($email!='')?$email:'appsupport@gmail.com');
         $parameters = [
             'command'            => 'PURCHASE',
             'currency'           => $this->currency,
             'amount'             => round($amount * 100),
             'token_name'         => $tokenName,
             'merchant_reference' => $merchantReference,
-            'customer_email'     => $email,
+            'customer_email'     => $customerEmail,
             'return_url'         => $returnUrl
         ];
 
