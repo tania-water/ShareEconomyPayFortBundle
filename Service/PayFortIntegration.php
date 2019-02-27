@@ -96,9 +96,12 @@ class PayFortIntegration
      * @param array $requestParams
      * @return string Request signature
      */
-    private function calculateRequestSignature($requestParams)
+    private function calculateRequestSignature($requestParams,$paymentOption=null)
     {
-        return $this->calculateSignature($requestParams, $this->shaRequestPhrase, ["card_number", "expiry_date", "card_security_code", "card_holder_name"]);
+       //if($paymentOption=='MADA')
+       //return $this->calculateSignature($requestParams, $this->shaRequestPhrase, ["card_number", "expiry_date", "card_holder_name"]);
+      // else
+       return $this->calculateSignature($requestParams, $this->shaRequestPhrase, ["card_number", "expiry_date", "card_security_code", "card_holder_name"]);
     }
 
     /**
@@ -242,10 +245,11 @@ class PayFortIntegration
      * @param PfTransaction $transaction
      * @return array
      */
-    public function purchaseTransaction(PfTransaction $transaction)
+    public function purchaseTransaction(PfTransaction $transaction,$cardSecurityCode)
     {
         return $this->purchase($transaction->getPaymentMethod()->getTokenName(), $transaction->getAmount(), $transaction->getMerchantReference(),
-                $transaction->getPaymentMethod()->getHolder()->getEmail());
+                $transaction->getPaymentMethod()->getHolder()->getEmail(),
+            $transaction->getPaymentMethod()->getPaymentOption(),$cardSecurityCode);
     }
 
     /**
@@ -254,12 +258,12 @@ class PayFortIntegration
      * @param array $params
      * @return array
      */
-    private function addDefaultParams($params)
+    private function addDefaultParams($params,$paymentOption=null)
     {
         $params['language']            = $this->language;
         $params['merchant_identifier'] = $this->merchantIdentifier;
         $params['access_code']         = $this->accessCode;
-        $params['signature']           = $this->calculateRequestSignature($params);
+        $params['signature']           = $this->calculateRequestSignature($params,$paymentOption);
 
         return $params;
     }
