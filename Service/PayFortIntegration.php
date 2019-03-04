@@ -223,7 +223,9 @@ class PayFortIntegration
      * @param string $tokenName
      * @param  $amount
      * @param string $merchantReference
+     * @param $email
      * @return array
+     * @throws \Exception
      */
     public function purchase($tokenName, $amount, $merchantReference, $email)
     {
@@ -245,11 +247,10 @@ class PayFortIntegration
      * @param PfTransaction $transaction
      * @return array
      */
-    public function purchaseTransaction(PfTransaction $transaction,$cardSecurityCode)
+    public function purchaseTransaction(PfTransaction $transaction)
     {
         return $this->purchase($transaction->getPaymentMethod()->getTokenName(), $transaction->getAmount(), $transaction->getMerchantReference(),
-                $transaction->getPaymentMethod()->getHolder()->getEmail(),
-            $transaction->getPaymentMethod()->getPaymentOption(),$cardSecurityCode);
+                $transaction->getPaymentMethod()->getHolder()->getEmail());
     }
 
     /**

@@ -24,6 +24,8 @@ class PaymentOperations
 
     /**
      * @param $em
+     * @param \Ibtikar\ShareEconomyPayFortBundle\Service\PayFortIntegration $pfPaymentIntegration
+     * @param \Ibtikar\ShareEconomyPayFortBundle\Service\TransactionStatusService $transactionStatusService
      */
     public function __construct($em, PayFortIntegration $pfPaymentIntegration, TransactionStatusService $transactionStatusService)
     {
@@ -32,7 +34,7 @@ class PaymentOperations
         $this->transactionStatusService = $transactionStatusService;
     }
 
-    public function payInvoice(PfTransactionInvoiceInterface $invoice,$cardSecurityCode)
+    public function payInvoice(PfTransactionInvoiceInterface $invoice)
     {
         // make sure that the invoice object implements the PfTransactionInvoiceInterface interface
         if (!in_array(self::PF_TRANSACTION_INVOICE_INTERFACE_FQNS, class_implements($invoice))) {
@@ -62,8 +64,7 @@ class PaymentOperations
             ->setMerchantReference(bin2hex(random_bytes(16)));
 
         // make purchase in the payfort
-        $paymentResponse = $this->pfPaymentIntegration->purchaseTransaction($transaction,$cardSecurityCode);
-
+        $paymentResponse = $this->pfPaymentIntegration->purchaseTransaction($transaction);
         //Handling invalid token_name
         if(!isset($paymentResponse['fort_id']) || !isset($paymentResponse['currency']) || !isset($paymentResponse['merchant_reference'])){
            throw new \Exception('Transaction Failure | Invalid payment info.');
