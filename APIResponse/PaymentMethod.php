@@ -51,4 +51,8 @@ class PaymentMethod
      */
     public $isDefault;
 
+    /**
+     * @Assert\Type("string")
+     */
+    public $paymentOption2;
 }
