@@ -24,6 +24,8 @@ class PaymentOperations
 
     /**
      * @param $em
+     * @param \Ibtikar\ShareEconomyPayFortBundle\Service\PayFortIntegration $pfPaymentIntegration
+     * @param \Ibtikar\ShareEconomyPayFortBundle\Service\TransactionStatusService $transactionStatusService
      */
     public function __construct($em, PayFortIntegration $pfPaymentIntegration, TransactionStatusService $transactionStatusService)
     {
@@ -63,7 +65,6 @@ class PaymentOperations
 
         // make purchase in the payfort
         $paymentResponse = $this->pfPaymentIntegration->purchaseTransaction($transaction);
-
         //Handling invalid token_name
         if(!isset($paymentResponse['fort_id']) || !isset($paymentResponse['currency']) || !isset($paymentResponse['merchant_reference'])){
            throw new \Exception('Transaction Failure | Invalid payment info.');
@@ -74,7 +75,7 @@ class PaymentOperations
             ->setMerchantReference($paymentResponse['merchant_reference']);
 
         if (isset($paymentResponse['customer_ip'])) {
-            $transaction->setCustomerIp($paymentResponse['merchant_reference']);
+            $transaction->setCustomerIp($paymentResponse['customer_ip']);
         }
 
         if (isset($paymentResponse['authorization_code'])) {
@@ -87,5 +88,6 @@ class PaymentOperations
 
         // create new transaction status
         $this->transactionStatusService->addTransactionStatus($transaction, $paymentResponse);
+
     }
 }
