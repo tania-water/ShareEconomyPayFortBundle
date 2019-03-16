@@ -7,10 +7,11 @@ use Symfony\Component\HttpFoundation\Request;
 
 class OfflineNotificationsReceiverController extends Controller
 {
-
     /**
      *
      * @param Request $request
+     * @return \Symfony\Component\HttpFoundation\Response
+     * @throws \Exception
      */
     public function transactionStatusUpdateNotificationAction(Request $request)
     {

@@ -44,9 +44,10 @@ class TransactionStatusService
     }
 
     /**
-     * 
+     *
      * @param PfTransaction $transaction
-     * @param type $payfortResponse
+     * @param array $payfortResponse
+     * @throws \Exception
      */
     public function addTransactionStatus(PfTransaction $transaction, array $payfortResponse)
     {
